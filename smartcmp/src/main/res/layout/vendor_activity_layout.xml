@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/vendor_name_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vendor Name"
+                android:textSize="20sp"
+                android:layout_margin="8dp"
+                android:textColor="#000"
+                tools:ignore="HardcodedText" />
+
+            <Button
+                android:id="@+id/privacy_policy_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/purposes_section_title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextViewTitle"/>
+
+            <TextView
+                android:id="@+id/purposes_section_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"/>
+
+            <TextView
+                android:id="@+id/features_section_title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextViewTitle"/>
+
+            <TextView
+                android:id="@+id/features_section_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
