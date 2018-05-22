@@ -1,4 +1,4 @@
-package com.smartadserver.android.smartcmp;
+package com.smartadserver.android.smartcmp.demoapp;
 
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;

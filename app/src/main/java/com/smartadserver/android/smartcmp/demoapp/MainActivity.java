@@ -1,4 +1,4 @@
-package com.smartadserver.android.smartcmp;
+package com.smartadserver.android.smartcmp.demoapp;
 
 import android.content.DialogInterface;
 import android.preference.PreferenceManager;
