@@ -4,6 +4,7 @@ apply plugin: 'com.android.library'
 def cmpVersion = 2
 def cmpVersionName = "2"
 
+group = "com.smartadserver.android"
 version cmpVersionName
 
 // packagecloud.io requirement
@@ -21,6 +22,7 @@ uploadArchives {
 
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
+        mavenPassword = System.getenv("MAVEN_PASSWORD")
         repository(url: "packagecloud+https://packagecloud.io/smartadserver/android") {
             authentication(password: mavenPassword)
         }
