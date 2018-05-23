@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 // Current version of the cmp
 def cmpVersion = 2
 def cmpVersionName = "2"
+def mavenPassword = System.getenv("MAVEN_PASSWORD")
 
 group = "com.smartadserver.android"
 version cmpVersionName
@@ -22,7 +23,6 @@ uploadArchives {
 
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
-        mavenPassword = System.getenv("MAVEN_PASSWORD")
         repository(url: "packagecloud+https://packagecloud.io/smartadserver/android") {
             authentication(password: mavenPassword)
         }
