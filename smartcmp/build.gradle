@@ -1,18 +1,42 @@
 apply plugin: 'com.android.library'
 
+// Current version of the cmp
+def cmpVersion = 2
+def cmpVersionName = "2"
+
+version cmpVersionName
+
+// packagecloud.io requirement
+apply plugin: 'maven'
+
+// packagecloud.io requirement
+configurations {
+    deployerJars
+}
+
+uploadArchives {
+    if (project.hasProperty('isSnapshot') && project.findProperty('isSnapshot') == 'true') {
+        version = version + "-SNAPSHOT"
+    }
+
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/smartadserver/android") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+
 android {
     compileSdkVersion 27
-
-
 
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
+        versionCode cmpVersion
+        versionName cmpVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        archivesBaseName = "smartcmp"
     }
 
     testOptions {
@@ -28,6 +52,7 @@ android {
 
 }
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -36,7 +61,10 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
+    // packagecloud.io requirement
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
