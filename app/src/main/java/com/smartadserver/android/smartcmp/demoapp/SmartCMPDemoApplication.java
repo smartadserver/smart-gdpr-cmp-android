@@ -83,8 +83,8 @@ public class SmartCMPDemoApplication extends MultiDexApplication implements Cons
         // Note: depending on the situation, you might also want to allow or revoke all purposes consents without showing
         // the consent tool. You can do it using the acceptAllPurposes() and revokeAllPurposes() methods.
 
-        // Allow all purposes consents without prompting the user, for instance if the user is not subject to GDPR (for instance,
-        // when he is living outside of the EU).
+        // Allow all purposes consents without prompting the user, for instance if the user is not subject to GDPR (when he
+        // is living outside of the EU).
         // ConsentManager.getSharedInstance().allowAllPurposes();
 
         // Revoke all purposes consents without prompting the user, for instance if the user is under 16 years old (or younger
