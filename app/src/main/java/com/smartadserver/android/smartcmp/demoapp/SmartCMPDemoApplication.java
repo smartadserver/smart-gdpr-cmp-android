@@ -77,5 +77,18 @@ public class SmartCMPDemoApplication extends MultiDexApplication implements Cons
         // more details about this).
         //
         // To generate a valid IAB consent string easily, you can use the ConsentString class.
+
+        // ---------------------------------------------------------------------------------------------------------------------
+
+        // Note: depending on the situation, you might also want to allow or revoke all purposes consents without showing
+        // the consent tool. You can do it using the acceptAllPurposes() and revokeAllPurposes() methods.
+
+        // Allow all purposes consents without prompting the user, for instance if the user is not subject to GDPR (when he
+        // is living outside of the EU).
+        // ConsentManager.getSharedInstance().allowAllPurposes();
+
+        // Revoke all purposes consents without prompting the user, for instance if the user is under 16 years old (or younger
+        // depending on the country where the user is located).
+        // ConsentManager.getSharedInstance().revokeAllPurposes();
     }
 }

@@ -119,7 +119,7 @@ public class ConsentManager implements VendorListManagerListener {
             }
 
             // if coming from a background state, we need to enable vendors list periodical refreshes
-            if (wasBackground){
+            if (wasBackground) {
                 if (vendorListManager != null) {
                     vendorListManager.startAutomaticRefresh(false);
                 }
@@ -138,7 +138,7 @@ public class ConsentManager implements VendorListManagerListener {
             }
 
             // instantiate new check Runnable
-            checkIfBackgroundRunnable  = new Runnable(){
+            checkIfBackgroundRunnable = new Runnable() {
                 @Override
                 public void run() {
                     if (!isBackground && activityWasPaused) {
@@ -156,19 +156,24 @@ public class ConsentManager implements VendorListManagerListener {
         }
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        }
 
         @Override
-        public void onActivityStarted(Activity activity) {}
+        public void onActivityStarted(Activity activity) {
+        }
 
         @Override
-        public void onActivityStopped(Activity activity) {}
+        public void onActivityStopped(Activity activity) {
+        }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
 
         @Override
-        public void onActivityDestroyed(Activity activity) {}
+        public void onActivityDestroyed(Activity activity) {
+        }
     }
 
     /**
@@ -343,6 +348,77 @@ public class ConsentManager implements VendorListManagerListener {
 
         // Save the advertising consent status in the SharedPreferences.
         saveStringInSharedPreferences(Constants.AdvertisingConsentStatus.Key, consentString.isPurposeAllowed(Constants.AdvertisingConsentStatus.PurposeId) ? "1" : "0");
+    }
+
+    /**
+     * Adds all purposes consents for the current consent string if it is already defined, create a new consent string with full consent otherwise.
+     *
+     * @return true if all purposes have been added correctly, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public boolean allowAllPurposes() {
+        if (lastVendorList == null || !isConfigured) {
+            logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before adding all purposes. Please try again later.");
+            return false;
+        }
+
+        ConsentString consentString;
+
+        if (this.consentString != null) {
+            // The consent string is already set.
+            consentString = ConsentString.consentStringByAddingAllPurposeConsents(lastVendorList, this.consentString);
+        } else {
+            // The consent string is not set yet, so we create a consent string with full consent.
+            consentString = ConsentString.consentStringWithFullConsent(0, language, lastVendorList);
+        }
+
+        if (consentString == null) {
+            // something went wrong, return false without saving anything.
+            return false;
+        }
+
+        // Set the new consent string.
+        setConsentString(consentString);
+
+        return true;
+    }
+
+    /**
+     * Removes all purposes consents for the current consent string if it is already defined, create a new consent string with full vendors consent and no purposes consent otherwise.
+     *
+     * @return true if all purposes have been removed correctly, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public boolean revokeAllPurposes() {
+        if (lastVendorList == null || !isConfigured) {
+            logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before revoking all purposes. Please try again later.");
+            return false;
+        }
+
+        ConsentString consentString;
+
+        if (this.consentString != null) {
+            // The consent string is already set.
+            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, this.consentString);
+        } else {
+            // The consent string is not set yet.
+
+            // First, create a consent string with full consent.
+            consentString = ConsentString.consentStringWithFullConsent(0, language, lastVendorList);
+
+            // Then remove all purpose consents.
+            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, consentString);
+        }
+
+        if (consentString == null) {
+            // something went wrong, return false without saving anything.
+            return false;
+        }
+
+        // set the new consent string.
+        setConsentString(consentString);
+
+        return true;
     }
 
     /**
