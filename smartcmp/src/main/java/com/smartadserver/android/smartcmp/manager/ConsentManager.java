@@ -274,6 +274,15 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
+     * Set a new Context. This method is package private for test purpose.
+     *
+     * @param context the new context to set.
+     */
+    void setContext(Context context) {
+        this.context = context;
+    }
+
+    /**
      * @return Whether the user is subject to GDPR.
      */
     @SuppressWarnings("unused")
@@ -286,15 +295,12 @@ public class ConsentManager implements VendorListManagerListener {
      *
      * @param subjectToGDPR Whether or not the user is subject to GDPR.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "SameParameterValue"})
     public void setSubjectToGDPR(boolean subjectToGDPR) {
         this.subjectToGDPR = subjectToGDPR;
 
         // Save subjectToGDPR status to SharedPreferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(Constants.IABConsentKeys.SubjectToGDPR, subjectToGDPR);
-        editor.apply();
+        saveStringInSharedPreferences(Constants.IABConsentKeys.SubjectToGDPR, subjectToGDPR ? "1" : "0");
     }
 
     /**
@@ -319,10 +325,11 @@ public class ConsentManager implements VendorListManagerListener {
 
     /**
      * Internal method to update the consent string. Will automatically store the consent string in the SharedPreferences.
+     * Note: package private for test purpose.
      *
      * @param consentString The new consent string.
      */
-    private void setConsentString(ConsentString consentString) {
+    void setConsentString(ConsentString consentString) {
         this.consentString = consentString;
 
         if (consentString == null) {
@@ -333,6 +340,9 @@ public class ConsentManager implements VendorListManagerListener {
         saveStringInSharedPreferences(Constants.IABConsentKeys.ConsentString, consentString.getConsentString());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedPurposeConsent, consentString.parsedPurposeConsents());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedVendorConsent, consentString.parsedVendorConsents());
+
+        // Save the advertising consent status in the SharedPreferences.
+        saveStringInSharedPreferences(Constants.AdvertisingConsentStatus.Key, consentString.isPurposeAllowed(Constants.AdvertisingConsentStatus.PurposeId) ? "1" : "0");
     }
 
     /**
