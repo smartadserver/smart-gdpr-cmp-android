@@ -735,6 +735,78 @@ public class ConsentStringTest {
     }
 
     @Test
+    public void testConsentStringByAddingAllPurposes() throws UnknownVersionNumberException {
+        Date date = DateUtils.dateFromString("2017-11-07T18:59:04.9Z");
+        Date updatedDate = DateUtils.dateFromString("2018-11-07T18:59:04.9Z");
+
+        if (date == null || updatedDate == null) {
+            Assert.fail("Date is null");
+        }
+
+        ConsentString consentString = new ConsentString(new VersionConfig(1),
+                date,
+                date,
+                1,
+                2,
+                3,
+                new Language("en"),
+                getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2, 4)));
+
+        ConsentString expectedString = new ConsentString(new VersionConfig(1),
+                date,
+                updatedDate,
+                1,
+                2,
+                3,
+                new Language("en"),
+                getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)),
+                new ArrayList<>(Arrays.asList(1, 2, 4)));
+
+        ConsentString resultString = ConsentString.consentStringByAddingAllPurposeConsents(getVendorList(), consentString, updatedDate);
+
+        Assert.assertEquals(expectedString, resultString);
+    }
+
+    @Test
+    public void testConsentStringByRemovingAllPurposes() throws UnknownVersionNumberException {
+        Date date = DateUtils.dateFromString("2017-11-07T18:59:04.9Z");
+        Date updatedDate = DateUtils.dateFromString("2018-11-07T18:59:04.9Z");
+
+        if (date == null || updatedDate == null) {
+            Assert.fail("Date is null");
+        }
+
+        ConsentString consentString = new ConsentString(new VersionConfig(1),
+                date,
+                date,
+                1,
+                2,
+                3,
+                new Language("en"),
+                getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2, 4)));
+
+        ConsentString expectedString = new ConsentString(new VersionConfig(1),
+                date,
+                updatedDate,
+                1,
+                2,
+                3,
+                new Language("en"),
+                getVendorList(),
+                new ArrayList<Integer>(),
+                new ArrayList<>(Arrays.asList(1, 2, 4)));
+
+        ConsentString resultString = ConsentString.consentStringByRemovingAllPurposeConsents(getVendorList(), consentString, updatedDate);
+
+        Assert.assertEquals(expectedString, resultString);
+    }
+
+    @Test
     public void testConsentStringByAddingVendor() throws UnknownVersionNumberException {
         Date date = DateUtils.dateFromString("2017-11-07T18:59:04.9Z");
         Date updatedDate = DateUtils.dateFromString("2018-11-07T18:59:04.9Z");
