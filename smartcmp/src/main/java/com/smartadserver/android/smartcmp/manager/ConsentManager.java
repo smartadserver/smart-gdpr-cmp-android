@@ -352,11 +352,10 @@ public class ConsentManager implements VendorListManagerListener {
 
     /**
      * Adds all purposes consents for the current consent string if it is already defined, create a new consent string with full consent otherwise.
-     * <p>
-     * Note: if the vendor list is not set yet, it will do nothing.
      *
      * @return true if all purposes have been added correctly, false otherwise.
      */
+    @SuppressWarnings("unused")
     public boolean acceptAllPurposes() {
         if (lastVendorList == null || !isConfigured) {
             logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before adding all purposes. Please try again later.");
@@ -386,11 +385,10 @@ public class ConsentManager implements VendorListManagerListener {
 
     /**
      * Removes all purposes consents for the current consent string if it is already defined, create a new consent string with full vendors consent and no purposes consent otherwise.
-     * <p>
-     * Note: if the vendor list is not set yet, it will do nothing.
      *
      * @return true if all purposes have been removed correctly, false otherwise.
      */
+    @SuppressWarnings("unused")
     public boolean revokeAllPurposes() {
         if (lastVendorList == null || !isConfigured) {
             logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before revoking all purposes. Please try again later.");
