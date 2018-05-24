@@ -333,6 +333,9 @@ public class ConsentManager implements VendorListManagerListener {
         saveStringInSharedPreferences(Constants.IABConsentKeys.ConsentString, consentString.getConsentString());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedPurposeConsent, consentString.parsedPurposeConsents());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedVendorConsent, consentString.parsedVendorConsents());
+
+        // Save the advertising consent status in the SharedPreferences.
+        saveStringInSharedPreferences(Constants.AdvertisingConsentStatus.Key, consentString.isPurposeAllowed(Constants.AdvertisingConsentStatus.PurposeId) ? "1" : "0");
     }
 
     /**

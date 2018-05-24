@@ -27,7 +27,20 @@ public class Constants {
         public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsent";
     }
 
-    // Vendor List configuration
+    // The AdvertisingConsentStatus SharedPreferences key contains the current user consent for the advertising
+    // purpose of the current vendor list.
+    //
+    // This status is only based on the answer of the user for the advertising purpose and does not take
+    // vendors status into account. It should be used for third party advertisement SDK that are not
+    // IAB TCF compliant.
+    //
+    // Note: this key is not part of the IAB TCF specifications.
+    public class AdvertisingConsentStatus {
+        public static final int PurposeId                         = 3;
+        public static final String Key                            = "SmartCMP_advertisingConsentStatus";
+    }
+
+    // Vendor List configuration.
     public class VendorList {
         public static final String NextRefreshDate                = "smartCMP_nextRefreshDate";
 
