@@ -76,11 +76,8 @@ public class ConsentToolActivity extends AppCompatActivity {
             return;
         }
 
-        // Retrieve the initial consent string by default.
-        ConsentString consentString = getIntent().getParcelableExtra("consent_string");
-
         // Return the new consent string.
-        consentString = data.getParcelableExtra("consent_string");
+        ConsentString consentString = data.getParcelableExtra("consent_string");
 
         ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
 

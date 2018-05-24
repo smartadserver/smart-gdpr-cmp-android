@@ -1,7 +1,5 @@
 package com.smartadserver.android.smartcmp.manager;
 
-import android.support.annotation.NonNull;
-
 import com.smartadserver.android.smartcmp.consentstring.ConsentString;
 import com.smartadserver.android.smartcmp.model.VendorList;
 

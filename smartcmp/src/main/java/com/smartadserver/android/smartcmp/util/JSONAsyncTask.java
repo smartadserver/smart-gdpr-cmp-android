@@ -95,7 +95,7 @@ public class JSONAsyncTask extends AsyncTask {
                 if (connection != null) {
                     connection.disconnect();
                 }
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
         return null;

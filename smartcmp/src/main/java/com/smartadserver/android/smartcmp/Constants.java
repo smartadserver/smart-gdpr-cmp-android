@@ -42,8 +42,6 @@ public class Constants {
 
     // Vendor List configuration.
     public class VendorList {
-        public static final String NextRefreshDate                = "smartCMP_nextRefreshDate";
-
         public static final String DefaultEndPoint                = "https://vendorlist.consensu.org/vendorlist.json";
         public static final String VersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
 

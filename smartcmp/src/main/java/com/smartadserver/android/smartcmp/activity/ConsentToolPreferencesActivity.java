@@ -1,12 +1,10 @@
 package com.smartadserver.android.smartcmp.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -192,7 +190,8 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @NonNull
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v;
             boolean isTitle = true;
 
@@ -207,7 +206,7 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
             int ViewType = getItemViewType(position);
             PreferencesViewHolder holder = (PreferencesViewHolder) viewHolder;
             ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();

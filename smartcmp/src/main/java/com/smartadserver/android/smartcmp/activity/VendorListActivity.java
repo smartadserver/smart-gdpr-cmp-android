@@ -113,13 +113,14 @@ public class VendorListActivity extends AppCompatActivity {
     private class ListLayoutAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @NonNull
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vendor_cell, parent, false);
             return new VendorViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
             Vendor vendor = vendorList.getActivatedVendor().get(position);
             VendorViewHolder holder = (VendorViewHolder) viewHolder;
             holder.setVendor(vendor);
