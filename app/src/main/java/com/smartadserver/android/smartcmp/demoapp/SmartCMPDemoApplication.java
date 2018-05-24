@@ -85,7 +85,7 @@ public class SmartCMPDemoApplication extends MultiDexApplication implements Cons
 
         // Allow all purposes consents without prompting the user, for instance if the user is not subject to GDPR (for instance,
         // when he is living outside of the EU).
-        // ConsentManager.getSharedInstance().acceptAllPurposes();
+        // ConsentManager.getSharedInstance().allowAllPurposes();
 
         // Revoke all purposes consents without prompting the user, for instance if the user is under 16 years old (or younger
         // depending on the country where the user is located).

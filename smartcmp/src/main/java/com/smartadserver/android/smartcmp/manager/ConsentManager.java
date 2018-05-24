@@ -356,7 +356,7 @@ public class ConsentManager implements VendorListManagerListener {
      * @return true if all purposes have been added correctly, false otherwise.
      */
     @SuppressWarnings("unused")
-    public boolean acceptAllPurposes() {
+    public boolean allowAllPurposes() {
         if (lastVendorList == null || !isConfigured) {
             logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before adding all purposes. Please try again later.");
             return false;
