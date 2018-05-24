@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 // Current version of the cmp
-def cmpVersion = 2
-def cmpVersionName = "2"
+def cmpVersion = 3
+def cmpVersionName = "3"
 def mavenPassword = System.getenv("MAVEN_PASSWORD")
 
 group = "com.smartadserver.android"
@@ -33,7 +33,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode cmpVersion
         versionName cmpVersionName

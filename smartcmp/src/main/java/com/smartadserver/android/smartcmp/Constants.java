@@ -14,7 +14,7 @@ public class Constants {
         // If you d'ont use it exactly as distributed in the official Smart AdServer repository,
         // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
         public static final int ID = 33;
-        public static final int VERSION = 2;
+        public static final int VERSION = 3;
     }
 
     // IAB Keys for SharedPreferences storage.
@@ -42,8 +42,6 @@ public class Constants {
 
     // Vendor List configuration.
     public class VendorList {
-        public static final String NextRefreshDate                = "smartCMP_nextRefreshDate";
-
         public static final String DefaultEndPoint                = "https://vendorlist.consensu.org/vendorlist.json";
         public static final String VersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
 

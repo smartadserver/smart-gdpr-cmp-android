@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/vendor_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vendor Name"
-        android:layout_marginStart="8dp"
-        android:textColor="#000"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_toLeftOf="@id/clickable_zone_switch"
         android:layout_toStartOf="@id/clickable_zone_switch"
+        android:text="Vendor Name"
+        android:textColor="#000"
         tools:ignore="HardcodedText" />
 
     <RelativeLayout
@@ -22,6 +26,7 @@
         android:layout_width="70dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_centerInParent="true">
 
         <Switch
@@ -29,8 +34,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp" />
     </RelativeLayout>
 
 

@@ -14,7 +14,6 @@ import com.smartadserver.android.smartcmp.model.VendorList;
 import com.smartadserver.android.smartcmp.model.VersionConfig;
 import com.smartadserver.android.smartcmp.util.BitUtils;
 import com.smartadserver.android.smartcmp.util.BitsString;
-import com.smartadserver.android.smartcmp.vendorlist.VendorListManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
