@@ -3,6 +3,7 @@ package com.smartadserver.android.smartcmp.consentstring;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.smartadserver.android.smartcmp.Constants;
 import com.smartadserver.android.smartcmp.exception.UnknownVersionNumberException;
@@ -1195,9 +1196,9 @@ public class ConsentString implements Parcelable {
      *
      * @param vendorList            The vendor list used to retrieve all purposes to consent to.
      * @param previousConsentString The previous consent string.
-     * @return a new consent string giving consent to all purposes of the vendor list.
+     * @return a new consent string giving consent to all purposes of the vendor list, or null if the vendor list version is not the same as the consent string's vendor list version.
      */
-    static public ConsentString consentStringByAddingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString) {
+    static public @Nullable ConsentString consentStringByAddingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString) {
         return consentStringByAddingAllPurposeConsents(vendorList, previousConsentString, new Date());
     }
 
@@ -1209,9 +1210,13 @@ public class ConsentString implements Parcelable {
      * @param vendorList            The vendor list used to retrieve all purposes to consent to.
      * @param previousConsentString The previous consent string.
      * @param lastUpdated           The date that will be used as last updated date.
-     * @return a new consent string giving consent to all purposes of the vendor list.
+     * @return a new consent string giving consent to all purposes of the vendor list, or null if the vendor list version is not the same as the consent string's vendor list version.
      */
-    static public ConsentString consentStringByAddingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
+    static public @Nullable ConsentString consentStringByAddingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
+        if (vendorList.getVersion() != previousConsentString.getVendorListVersion()) {
+            return null;
+        }
+
         ConsentString consentString = new ConsentString(previousConsentString);
 
         for (Purpose purpose : vendorList.getPurposes()) {
@@ -1271,9 +1276,9 @@ public class ConsentString implements Parcelable {
      *
      * @param vendorList            The current vendor list.
      * @param previousConsentString The previous consent string.
-     * @return A new consent string with all consent removed for purposes.
+     * @return A new consent string with all consent removed for purposes, or null if the vendor list version is not the same as the consent string's vendor list version.
      */
-    static public ConsentString consentStringByRemovingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString) {
+    static public @Nullable ConsentString consentStringByRemovingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString) {
         return consentStringByRemovingAllPurposeConsents(vendorList, previousConsentString, new Date());
     }
 
@@ -1285,9 +1290,13 @@ public class ConsentString implements Parcelable {
      * @param vendorList            The current vendor list.
      * @param previousConsentString The previous consent string.
      * @param lastUpdated           The date that will be used as last updated date.
-     * @return A new consent string with all consent removed for purposes.
+     * @return A new consent string with all consent removed for purposes, or null if the vendor list version is not the same as the consent string's vendor list version.
      */
-    static public ConsentString consentStringByRemovingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
+    static public @Nullable ConsentString consentStringByRemovingAllPurposeConsents(@NonNull VendorList vendorList, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
+        if (vendorList.getVersion() != previousConsentString.getVendorListVersion()) {
+            return null;
+        }
+
         ConsentString consentString = new ConsentString(previousConsentString);
 
         for (Purpose purpose : vendorList.getPurposes()) {
