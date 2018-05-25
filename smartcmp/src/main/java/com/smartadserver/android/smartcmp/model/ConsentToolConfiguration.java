@@ -47,11 +47,6 @@ public class ConsentToolConfiguration {
     // Eg: "Privacy preferences".
     private int consentManagementScreenTitleStringRes;
 
-    // Text of the button that cancels the preferences management.
-    //
-    // Eg: "Cancel"
-    private int consentManagementCancelButtonTitleStringRes;
-
     // Text of the button that saves consent choice.
     //
     // Eg: "Save"
@@ -171,7 +166,6 @@ public class ConsentToolConfiguration {
      * @param homeScreenManageConsentButtonTitleStringRes                     Text of the button to open consent management controller.
      * @param homeScreenCloseButtonTitleStringRes                             Text of the button to close the consent tool directly.
      * @param consentManagementScreenTitleStringRes                           Text of the preferences app bar subtitle.
-     * @param consentManagementCancelButtonTitleStringRes                     Text of the button that cancels the preferences management.
      * @param consentManagementSaveButtonTitleStringRes                       Text of the button that saves consent choice.
      * @param consentManagementScreenVendorsSectionHeaderTextStringRes        Text of the vendors section header.
      * @param consentManagementScreenPurposesSectionHeaderTextStringRes       Text of the purposes section header.
@@ -197,7 +191,6 @@ public class ConsentToolConfiguration {
                                     @StringRes int homeScreenManageConsentButtonTitleStringRes,
                                     @StringRes int homeScreenCloseButtonTitleStringRes,
                                     @StringRes int consentManagementScreenTitleStringRes,
-                                    @StringRes int consentManagementCancelButtonTitleStringRes,
                                     @StringRes int consentManagementSaveButtonTitleStringRes,
                                     @StringRes int consentManagementScreenVendorsSectionHeaderTextStringRes,
                                     @StringRes int consentManagementScreenPurposesSectionHeaderTextStringRes,
@@ -223,7 +216,6 @@ public class ConsentToolConfiguration {
         this.homeScreenManageConsentButtonTitleStringRes = homeScreenManageConsentButtonTitleStringRes;
         this.homeScreenCloseButtonTitleStringRes = homeScreenCloseButtonTitleStringRes;
         this.consentManagementScreenTitleStringRes = consentManagementScreenTitleStringRes;
-        this.consentManagementCancelButtonTitleStringRes = consentManagementCancelButtonTitleStringRes;
         this.consentManagementSaveButtonTitleStringRes = consentManagementSaveButtonTitleStringRes;
         this.consentManagementScreenVendorsSectionHeaderTextStringRes = consentManagementScreenVendorsSectionHeaderTextStringRes;
         this.consentManagementScreenPurposesSectionHeaderTextStringRes = consentManagementScreenPurposesSectionHeaderTextStringRes;
@@ -278,13 +270,6 @@ public class ConsentToolConfiguration {
      */
     public String getConsentManagementScreenTitle() {
         return context.getString(consentManagementScreenTitleStringRes);
-    }
-
-    /**
-     * @return Text of the button that cancels the preferences management.
-     */
-    public String getConsentManagementCancelButtonTitle() {
-        return context.getString(consentManagementCancelButtonTitleStringRes);
     }
 
     /**

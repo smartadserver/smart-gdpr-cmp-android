@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -36,8 +38,12 @@ public class VendorListActivity extends AppCompatActivity {
         setContentView(R.layout.vendor_list_activity_layout);
 
         // Setup the actionBar if any
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementVendorsListTitle());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementVendorsListTitle());
+            // Display the back button
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
 
         consentString = getIntent().getParcelableExtra("consent_string");
@@ -47,6 +53,16 @@ public class VendorListActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.vendor_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ListLayoutAdapter());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

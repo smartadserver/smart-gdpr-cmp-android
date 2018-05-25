@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,8 +34,12 @@ public class VendorActivity extends AppCompatActivity {
         setContentView(R.layout.vendor_activity_layout);
 
         // Setup the actionBar if any
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementVendorDetailTitle());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementVendorDetailTitle());
+            // Display the back button
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
 
         vendorList = getIntent().getParcelableExtra("vendor_list");
@@ -112,5 +118,15 @@ public class VendorActivity extends AppCompatActivity {
         } else {
             privacyPolicyButton.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

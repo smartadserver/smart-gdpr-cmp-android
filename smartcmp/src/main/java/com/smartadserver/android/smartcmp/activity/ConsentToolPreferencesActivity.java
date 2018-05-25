@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,6 +48,9 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setSubtitle(config.getConsentManagementScreenTitle());
+            // Display the back button
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
 
         consentString = getIntent().getParcelableExtra("consent_string");
@@ -62,16 +66,6 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         adapter = new ListLayoutAdapter();
         recyclerView.setAdapter(adapter);
 
-        // Setup the negative button (acts like a back button)
-        Button cancelButton = findViewById(R.id.cancel_button);
-        cancelButton.setText(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementCancelButtonTitle());
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-
         // Setup the positive button
         Button saveButton = findViewById(R.id.save_button);
         saveButton.setText(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementSaveButtonTitle());
@@ -85,6 +79,16 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
