@@ -126,22 +126,13 @@ public class VendorList implements Parcelable {
 
         if (localizedJSON != null) {
             try {
-                int localizedVersion = localizedJSON.getInt(JSONKey.VENDOR_LIST_VERSION);
+                rawLocalizedPurposesArray = localizedJSON.getJSONArray(JSONKey.Purposes.PURPOSES);
+            } catch (JSONException e) {
+                // do nothing
+            }
 
-                // Get the localization only if the localized vendor list have the same version number as the initial vendor list.
-                if (version == localizedVersion) {
-                    try {
-                        rawLocalizedPurposesArray = localizedJSON.getJSONArray(JSONKey.Purposes.PURPOSES);
-                    } catch (JSONException e) {
-                        // do nothing
-                    }
-
-                    try {
-                        rawLocalizedFeaturesArray = localizedJSON.getJSONArray(JSONKey.Features.FEATURES);
-                    } catch (JSONException e) {
-                        // do nothing
-                    }
-                }
+            try {
+                rawLocalizedFeaturesArray = localizedJSON.getJSONArray(JSONKey.Features.FEATURES);
             } catch (JSONException e) {
                 // do nothing
             }

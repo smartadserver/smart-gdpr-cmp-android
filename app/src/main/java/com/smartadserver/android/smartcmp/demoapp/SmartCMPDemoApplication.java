@@ -34,7 +34,7 @@ public class SmartCMPDemoApplication extends MultiDexApplication implements Cons
         } catch (IllegalArgumentException e) {
             language = Language.getDefaultLanguage();
         }
-        ConsentManager.getSharedInstance().configure(this, language, generatedConsentToolConfiguration());
+        ConsentManager.getSharedInstance().configure(this, new Language("fr"), generatedConsentToolConfiguration());
     }
 
     private ConsentToolConfiguration generatedConsentToolConfiguration() {
