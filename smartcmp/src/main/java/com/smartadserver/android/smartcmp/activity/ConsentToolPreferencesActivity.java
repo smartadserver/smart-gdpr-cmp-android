@@ -1,6 +1,7 @@
 package com.smartadserver.android.smartcmp.activity;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,11 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.smartadserver.android.smartcmp.R;
@@ -48,49 +47,44 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setSubtitle(config.getConsentManagementScreenTitle());
-            // Display the back button
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
         }
 
         consentString = getIntent().getParcelableExtra("consent_string");
         vendorList = getIntent().getParcelableExtra("vendor_list");
 
+        bindViews();
+    }
+
+    private void bindViews() {
         // Setup the recycler view.
         RecyclerView recyclerView = findViewById(R.id.preferences_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ListLayoutAdapter();
         recyclerView.setAdapter(adapter);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.consent_tool_preferences_activity_menu, menu);
+        // Setup the negative button (acts like a back button)
+        Button cancelButton = findViewById(R.id.cancel_button);
+        cancelButton.setText(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementCancelButtonTitle());
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
-        MenuItem saveButton = menu.findItem(R.id.validate_menu_button);
-        if (saveButton != null) {
-            saveButton.setTitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementSaveButtonTitle());
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-
-        } else if (item.getItemId() == R.id.validate_menu_button) {
-            Intent result = new Intent();
-            result.putExtra("consent_string", consentString);
-            setResult(RESULT_OK, result);
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        // Setup the positive button
+        Button saveButton = findViewById(R.id.save_button);
+        saveButton.setText(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementSaveButtonTitle());
+        saveButton.getBackground().setColorFilter(getResources().getColor(R.color.actionButtonColor), PorterDuff.Mode.MULTIPLY);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent result = new Intent();
+                result.putExtra("consent_string", consentString);
+                setResult(RESULT_OK, result);
+                finish();
+            }
+        });
     }
 
     @Override

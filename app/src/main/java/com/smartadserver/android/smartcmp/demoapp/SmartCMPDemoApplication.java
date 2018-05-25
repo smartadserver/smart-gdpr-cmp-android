@@ -44,6 +44,7 @@ public class SmartCMPDemoApplication extends MultiDexApplication implements Cons
                 R.string.cmp_home_screen_manage_consent_button_title,
                 R.string.cmp_home_screen_close_button_title,
                 R.string.cmp_consent_tool_preferences_appbar_subtitle,
+                R.string.cmp_consent_tool_preferences_cancel_button_title,
                 R.string.cmp_consent_tool_preferences_save_button_title,
                 R.string.cmp_consent_tool_preferences_vendors_section_header,
                 R.string.cmp_consent_tool_preferences_purposes_section_header,

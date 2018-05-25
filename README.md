@@ -19,7 +19,7 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 #### Using Gradle (recommended)
 
 1. In the main `build.gradle` of your project, declare the Smart repository
-    
+
         allprojects {
             repositories {
                 // add the Smart repository
@@ -52,6 +52,7 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_home_screen_manage_consent_button_title,
                 R.string.cmp_home_screen_close_button_title,
                 R.string.cmp_consent_tool_preferences_appbar_subtitle,
+                R.string.cmp_consent_tool_preferences_cancel_button_title,
                 R.string.cmp_consent_tool_preferences_save_button_title,
                 R.string.cmp_consent_tool_preferences_vendors_section_header,
                 R.string.cmp_consent_tool_preferences_purposes_section_header,
