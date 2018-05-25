@@ -464,6 +464,7 @@ public class ConsentManager implements VendorListManagerListener {
 
         intent.putExtra("consent_string", consentString);
         intent.putExtra("vendor_list", lastVendorList);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
         return true;
