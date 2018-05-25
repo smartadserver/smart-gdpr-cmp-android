@@ -182,12 +182,4 @@ public class VendorListTest {
         Assert.assertEquals(new ArrayList<Integer>() {{ add(1); add(3); add(4); add(5); }}, vendorList.getVendors().get(4).getLegitimatePurposes());
         Assert.assertEquals(new ArrayList<Integer>(), vendorList.getVendors().get(4).getFeatures());
     }
-
-    @Test
-    public void testLocalizedVendorListWithWrongVersionIsNotTaken() throws JSONException, MalformedURLException {
-        VendorList vendorList = new VendorList(getUpdatedVendorsJSON(), getLocalizedVendorsJSON());
-        VendorList expectedVendorList = new VendorList(getUpdatedVendorsJSON());
-
-        Assert.assertEquals(vendorList, expectedVendorList);
-    }
 }
