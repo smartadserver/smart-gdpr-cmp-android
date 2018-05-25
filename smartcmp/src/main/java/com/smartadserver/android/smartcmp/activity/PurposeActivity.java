@@ -3,7 +3,9 @@ package com.smartadserver.android.smartcmp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -26,8 +28,12 @@ public class PurposeActivity extends AppCompatActivity {
         setContentView(R.layout.purpose_activity_layout);
 
         // Setup the actionBar if any
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementPurposeDetailTitle());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(ConsentManager.getSharedInstance().getConsentToolConfiguration().getConsentManagementPurposeDetailTitle());
+            // Display the back button
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
 
         purpose = getIntent().getParcelableExtra("purpose");
@@ -50,6 +56,16 @@ public class PurposeActivity extends AppCompatActivity {
         // Setup the purpose description textview
         TextView descriptionTextView = findViewById(R.id.purpose_description_textview);
         descriptionTextView.setText(purpose.getDescription());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

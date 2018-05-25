@@ -19,7 +19,7 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 #### Using Gradle (recommended)
 
 1. In the main `build.gradle` of your project, declare the Smart repository
-    
+
         allprojects {
             repositories {
                 // add the Smart repository

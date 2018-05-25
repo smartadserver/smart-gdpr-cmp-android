@@ -47,7 +47,7 @@ public class ConsentToolConfiguration {
     // Eg: "Privacy preferences".
     private int consentManagementScreenTitleStringRes;
 
-    // Text to save consent choice.
+    // Text of the button that saves consent choice.
     //
     // Eg: "Save"
     private int consentManagementSaveButtonTitleStringRes;
@@ -166,7 +166,7 @@ public class ConsentToolConfiguration {
      * @param homeScreenManageConsentButtonTitleStringRes                     Text of the button to open consent management controller.
      * @param homeScreenCloseButtonTitleStringRes                             Text of the button to close the consent tool directly.
      * @param consentManagementScreenTitleStringRes                           Text of the preferences app bar subtitle.
-     * @param consentManagementSaveButtonTitleStringRes                       Text to save consent choice.
+     * @param consentManagementSaveButtonTitleStringRes                       Text of the button that saves consent choice.
      * @param consentManagementScreenVendorsSectionHeaderTextStringRes        Text of the vendors section header.
      * @param consentManagementScreenPurposesSectionHeaderTextStringRes       Text of the purposes section header.
      * @param consentManagementVendorsActivityAccessTextStringRes             Text to access the full vendor list.
@@ -273,7 +273,7 @@ public class ConsentToolConfiguration {
     }
 
     /**
-     * @return Text to save consent choice.
+     * @return Text of the button that saves consent choice.
      */
     public String getConsentManagementSaveButtonTitle() {
         return context.getString(consentManagementSaveButtonTitleStringRes);
