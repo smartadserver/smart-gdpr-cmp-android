@@ -14,7 +14,7 @@ public class Constants {
         // If you d'ont use it exactly as distributed in the official Smart AdServer repository,
         // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
         public static final int ID = 33;
-        public static final int VERSION = 3;
+        public static final int VERSION = 4;
     }
 
     // IAB Keys for SharedPreferences storage.
