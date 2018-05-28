@@ -11,7 +11,7 @@ public class Constants {
 
         // '33' IS THE OFFICIAL CMP ID FOR SmartCMP.
         // You can use this ID as long as you don't change the source code of this project.
-        // If you d'ont use it exactly as distributed in the official Smart AdServer repository,
+        // If you don't use it exactly as distributed in the official Smart AdServer repository,
         // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
         public static final int ID = 33;
         public static final int VERSION = 5;
