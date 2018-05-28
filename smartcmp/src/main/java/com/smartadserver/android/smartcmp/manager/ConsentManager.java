@@ -255,7 +255,7 @@ public class ConsentManager implements VendorListManagerListener {
         if (rawConsentString != null) {
             try {
                 consentString = ConsentString.fromBase64String(rawConsentString);
-            } catch (UnknownVersionNumberException ignored) {
+            } catch (Exception ignored) {
             }
         }
 
