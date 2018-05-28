@@ -14,8 +14,8 @@
         android:layout_centerInParent="true"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_toLeftOf="@id/secondary_textview"
-        android:layout_toStartOf="@id/secondary_textview"
+        android:layout_toLeftOf="@+id/secondary_textview"
+        android:layout_toStartOf="@+id/secondary_textview"
         android:text="Main textview"
         android:textColor="#000"
         tools:ignore="HardcodedText" />
