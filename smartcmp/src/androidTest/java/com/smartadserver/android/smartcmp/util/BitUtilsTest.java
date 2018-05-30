@@ -92,6 +92,8 @@ public class BitUtilsTest {
         Assert.assertEquals(BitUtils.bitsToLetter("011001"), "z");
         Assert.assertNull(BitUtils.bitsToLetter(""));
         Assert.assertNull(BitUtils.bitsToLetter("a"));
+        Assert.assertNull(BitUtils.bitsToLetter("011010"));
+        Assert.assertNull(BitUtils.bitsToLetter("111111"));
     }
 
     @Test
