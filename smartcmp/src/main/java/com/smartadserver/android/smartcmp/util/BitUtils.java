@@ -170,7 +170,10 @@ public class BitUtils {
         Long letterIndex = bitsToLong(bits);
 
         if (letterIndex != null) {
-            return "" + Language.VALID_LETTERS.toCharArray()[letterIndex.intValue()];
+            try {
+                return "" + Language.VALID_LETTERS.toCharArray()[letterIndex.intValue()];
+            } catch (IndexOutOfBoundsException ignored) {
+            }
         }
 
         return null;
