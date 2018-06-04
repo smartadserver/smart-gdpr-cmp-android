@@ -23,8 +23,8 @@ public class Constants {
         public static final String CMPPresent                     = "IABConsent_CMPPresent";
         public static final String SubjectToGDPR                  = "IABConsent_SubjectToGDPR";
         public static final String ConsentString                  = "IABConsent_ConsentString";
-        public static final String ParsedPurposeConsent           = "IABConsent_ParsedPurposeConsent";
-        public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsent";
+        public static final String ParsedPurposeConsent           = "IABConsent_ParsedPurposeConsents";
+        public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsents";
     }
 
     // The AdvertisingConsentStatus SharedPreferences key contains the current user consent for the advertising
