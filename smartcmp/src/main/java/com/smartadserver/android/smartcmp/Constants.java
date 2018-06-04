@@ -14,7 +14,7 @@ public class Constants {
         // If you don't use it exactly as distributed in the official Smart AdServer repository,
         // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
         public static final int ID = 33;
-        public static final int VERSION = 5;
+        public static final int VERSION = 6;
     }
 
     // IAB Keys for SharedPreferences storage.
@@ -23,8 +23,8 @@ public class Constants {
         public static final String CMPPresent                     = "IABConsent_CMPPresent";
         public static final String SubjectToGDPR                  = "IABConsent_SubjectToGDPR";
         public static final String ConsentString                  = "IABConsent_ConsentString";
-        public static final String ParsedPurposeConsent           = "IABConsent_ParsedPurposeConsent";
-        public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsent";
+        public static final String ParsedPurposeConsent           = "IABConsent_ParsedPurposeConsents";
+        public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsents";
     }
 
     // The AdvertisingConsentStatus SharedPreferences key contains the current user consent for the advertising
