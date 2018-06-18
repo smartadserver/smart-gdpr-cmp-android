@@ -79,6 +79,9 @@ public class ConsentManager implements VendorListManagerListener {
     // The vendor list manager.
     private VendorListManager vendorListManager;
 
+    // The vendor list used by the current consent string.
+    private VendorList usedVendorList;
+
     // The last parsed vendor list.
     private VendorList lastVendorList;
 
@@ -538,6 +541,12 @@ public class ConsentManager implements VendorListManagerListener {
 
                     // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
                     if (currentDate.getTime() > nextUIDisplayDate) {
+
+                        if (consentString != null && usedVendorList != null && consentString.getVendorListVersion() != lastVendorList.getVersion() && usedVendorList.getVersion() == consentString.getVendorListVersion()) {
+                            // Update the consent string with the last vendor list.
+                            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, consentString);
+                        }
+
                         if (listener != null) {
                             // The listener is called so the publisher can ask for user's consent.
                             listener.onShowConsentToolRequest(consentString, lastVendorList);
@@ -606,14 +615,14 @@ public class ConsentManager implements VendorListManagerListener {
         if (consentString != null) {
 
             // If consent string has a different version than vendor list, ask for consent tool display
-            if (consentString.getVendorListVersion() != lastVendorList.getVersion()) {
+            if (consentString.getVendorListVersion() != lastVendorList.getVersion() && (usedVendorList == null || consentString.getVendorListVersion() != usedVendorList.getVersion())) {
 
                 // Fetching the old vendor list to migrate the consent string.
                 // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
                 vendorListManager.getVendorList(consentString.getVendorListVersion(), new VendorListManagerListener() {
                     @Override
-                    public void onVendorListUpdateSuccess(@NonNull VendorList lastVendorList) {
-                        consentString = ConsentString.consentStringFromUpdatedVendorList(vendorList, lastVendorList, consentString);
+                    public void onVendorListUpdateSuccess(@NonNull VendorList previousVendorList) {
+                        usedVendorList = previousVendorList;
                         handleVendorListChanged();
                     }
 
