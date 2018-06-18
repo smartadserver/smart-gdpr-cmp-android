@@ -39,14 +39,14 @@ public class ConsentManager implements VendorListManagerListener {
     // The key used to store the next ui display date in the Shared Preferences.
     static private final String NEXT_UI_DISPLAY_DATE_KEY = "SmartCMP_NextUiDisplayDate";
 
-    // Default interval between each consent tool UI automatic display in milliseconds (24 hours).
-    static private final long DEFAULT_UI_DISPLAY_INTERVAL = 60000;//86400000;
+    // Default interval between each consent tool UI automatic display in milliseconds (7 days).
+    static private final long DEFAULT_UI_DISPLAY_INTERVAL = 604800000;
 
     // Default refresh interval in milliseconds (1 hour).
-    static private final long DEFAULT_REFRESH_INTERVAL = 10000;//36000000;
+    static private final long DEFAULT_REFRESH_INTERVAL = 36000000;
 
     // Default retry interval (needed after an unsuccessful refresh) in milliseconds (1 minute).
-    static private final long DEFAULT_RETRY_INTERVAL = 2000;//60000;
+    static private final long DEFAULT_RETRY_INTERVAL = 60000;
 
     // The default behavior if LAT (Limited Ad Tracking) is enabled.
     static private final boolean DEFAULT_LAT_VALUE = true;
