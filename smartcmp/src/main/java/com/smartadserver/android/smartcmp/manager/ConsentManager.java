@@ -318,7 +318,7 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
-     * @return return the last vendor list fetched.
+     * @return the last vendor list fetched.
      */
     public @Nullable VendorList getVendorList() {
         return lastVendorList;
