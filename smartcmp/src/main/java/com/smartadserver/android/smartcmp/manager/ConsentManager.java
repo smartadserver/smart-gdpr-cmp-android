@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.VectorEnabledTintResources;
 import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -26,6 +27,7 @@ import com.smartadserver.android.smartcmp.vendorlist.VendorListManager;
 import com.smartadserver.android.smartcmp.vendorlist.VendorListManagerListener;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Singleton class that manages the GDPR user consent for the current device
@@ -34,11 +36,17 @@ import java.io.IOException;
 @SuppressWarnings("WeakerAccess")
 public class ConsentManager implements VendorListManagerListener {
 
-    // Default refresh interval in milliseconds (24 hours).
-    static private final long DEFAULT_REFRESH_INTERVAL = 86400000;
+    // The key used to store the next ui display date in the Shared Preferences.
+    static private final String NEXT_UI_DISPLAY_DATE_KEY = "SmartCMP_NextUiDisplayDate";
+
+    // Default interval between each consent tool UI automatic display in milliseconds (24 hours).
+    static private final long DEFAULT_UI_DISPLAY_INTERVAL = 60000;//86400000;
+
+    // Default refresh interval in milliseconds (1 hour).
+    static private final long DEFAULT_REFRESH_INTERVAL = 10000;//36000000;
 
     // Default retry interval (needed after an unsuccessful refresh) in milliseconds (1 minute).
-    static private final long DEFAULT_RETRY_INTERVAL = 60000;
+    static private final long DEFAULT_RETRY_INTERVAL = 2000;//60000;
 
     // The default behavior if LAT (Limited Ad Tracking) is enabled.
     static private final boolean DEFAULT_LAT_VALUE = true;
@@ -80,6 +88,9 @@ public class ConsentManager implements VendorListManagerListener {
     // Whether or not the consent tool should show if user has limited ad tracking from his device's settings.
     // If false and LAT is On, no consent will be given for any purpose or vendors.
     private boolean showConsentToolIfLAT;
+
+    // Interval (in milliseconds) between each consent tool UI display.
+    private long uiDisplayInterval;
 
     // Whether or not the consent tool is shown.
     private boolean consentToolIsShown = false;
@@ -199,7 +210,7 @@ public class ConsentManager implements VendorListManagerListener {
      */
     @SuppressWarnings("SameParameterValue")
     public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration) {
-        configure(application, language, consentToolConfiguration, DEFAULT_LAT_VALUE, DEFAULT_REFRESH_INTERVAL);
+        configure(application, language, consentToolConfiguration, DEFAULT_LAT_VALUE, DEFAULT_UI_DISPLAY_INTERVAL);
     }
 
     /**
@@ -216,7 +227,7 @@ public class ConsentManager implements VendorListManagerListener {
      */
     @SuppressWarnings("unused")
     public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking) {
-        configure(application, language, consentToolConfiguration, showConsentToolWhenLimitedAdTracking, DEFAULT_REFRESH_INTERVAL);
+        configure(application, language, consentToolConfiguration, showConsentToolWhenLimitedAdTracking, DEFAULT_UI_DISPLAY_INTERVAL);
     }
 
     /**
@@ -230,9 +241,9 @@ public class ConsentManager implements VendorListManagerListener {
      * @param language                             An instance of Language reflecting the device's current language.
      * @param consentToolConfiguration             An instance of ConsentToolConfiguration containing all the strings needed by the UI.
      * @param showConsentToolWhenLimitedAdTracking Whether or not the consent tool UI should be shown if the user has checked Limit Ad Tracking in his device's preferences. If false, the UI will never be shown if user checked LAT and consent string will be formatted has "user does not give consent".
-     * @param refreshingInterval                   The interval in milliseconds te refresh the vendor list.
+     * @param uiDisplayInterval                    The interval in milliseconds between each CMP UI display.
      */
-    public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking, long refreshingInterval) {
+    public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking, long uiDisplayInterval) {
         if (isConfigured) {
             logErrorMessage("ConsentManager is already configured for this session. You cannot reconfigure.");
             return;
@@ -249,6 +260,7 @@ public class ConsentManager implements VendorListManagerListener {
 
         this.language = language;
         this.showConsentToolIfLAT = showConsentToolWhenLimitedAdTracking;
+        this.uiDisplayInterval = uiDisplayInterval;
 
         // Check in preferences for already existing consent string.
         String rawConsentString = readStringFromSharedPreferences(Constants.IABConsentKeys.ConsentString, null);
@@ -260,7 +272,7 @@ public class ConsentManager implements VendorListManagerListener {
         }
 
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
-        vendorListManager = new VendorListManager(this, refreshingInterval, DEFAULT_RETRY_INTERVAL, language);
+        vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
         vendorListManager.startAutomaticRefresh(true);
     }
 
@@ -519,12 +531,24 @@ public class ConsentManager implements VendorListManagerListener {
                 // If the 'Limited Ad Tracking' is disable on the device, or if the 'Limited Ad Tracking' is enable but the publisher
                 // wants to handle the display himself...
                 if (!isLATEnable || showConsentToolIfLAT) {
-                    if (listener != null) {
-                        // The listener is called so the publisher can ask for user's consent.
-                        listener.onShowConsentToolRequest(consentString, lastVendorList);
-                    } else {
-                        // There is no listener so the CMP asked for user's consent automatically.
-                        showConsentTool();
+                    // Retrieve the nextDisplayUIDate from the shared preferences.
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    long nextUIDisplayDate = prefs.getLong(NEXT_UI_DISPLAY_DATE_KEY, 0);
+                    Date currentDate = new Date();
+
+                    // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
+                    if (currentDate.getTime() > nextUIDisplayDate) {
+                        if (listener != null) {
+                            // The listener is called so the publisher can ask for user's consent.
+                            listener.onShowConsentToolRequest(consentString, lastVendorList);
+                        } else {
+                            // There is no listener so the CMP asked for user's consent automatically.
+                            showConsentTool();
+                        }
+
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putLong(NEXT_UI_DISPLAY_DATE_KEY, currentDate.getTime() + uiDisplayInterval);
+                        editor.apply();
                     }
                 } else {
                     // If 'Limited Ad Tracking' is enabled and the publisher doesn't want to handle it itself, a consent string with no
