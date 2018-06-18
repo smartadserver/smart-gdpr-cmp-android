@@ -47,5 +47,7 @@ public class Constants {
 
         public static final String DefaultLocalizedEndPoint       = "https://vendorlist.consensu.org/purposes-{language}.json";
         public static final String VersionedLocalizedEndPoint     = "https://vendorlist.consensu.org/purposes-{language}-{version}.json";
+
+        public static final String NextRefreshDate                = "SmartCMP_NextRefreshDate";
     }
 }

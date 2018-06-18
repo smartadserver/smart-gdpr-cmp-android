@@ -18,7 +18,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.smartadserver.android.smartcmp.Constants;
 import com.smartadserver.android.smartcmp.activity.ConsentToolActivity;
 import com.smartadserver.android.smartcmp.consentstring.ConsentString;
-import com.smartadserver.android.smartcmp.exception.UnknownVersionNumberException;
 import com.smartadserver.android.smartcmp.model.ConsentToolConfiguration;
 import com.smartadserver.android.smartcmp.model.Language;
 import com.smartadserver.android.smartcmp.model.VendorList;
@@ -37,8 +36,8 @@ public class ConsentManager implements VendorListManagerListener {
     // Default refresh interval in milliseconds (24 hours).
     static private final long DEFAULT_REFRESH_INTERVAL = 86400000;
 
-    // Default retry interval (needed after an unsuccessful refresh) in milliseconds (1 minute).
-    static private final long DEFAULT_RETRY_INTERVAL = 60000;
+    // Default poll interval (time between each refresh attempt) in milliseconds (1 minute).
+    static private final long DEFAULT_POLL_INTERVAL = 60000;
 
     // The default behavior if LAT (Limited Ad Tracking) is enabled.
     static private final boolean DEFAULT_LAT_VALUE = true;
@@ -260,8 +259,8 @@ public class ConsentManager implements VendorListManagerListener {
         }
 
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
-        vendorListManager = new VendorListManager(this, refreshingInterval, DEFAULT_RETRY_INTERVAL, language);
-        vendorListManager.startAutomaticRefresh(true);
+        vendorListManager = new VendorListManager(context, this, refreshingInterval, DEFAULT_POLL_INTERVAL, language);
+        vendorListManager.startAutomaticRefresh(false);
     }
 
     /**

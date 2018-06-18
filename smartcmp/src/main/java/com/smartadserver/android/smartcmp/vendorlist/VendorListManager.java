@@ -1,10 +1,14 @@
 package com.smartadserver.android.smartcmp.vendorlist;
 
 import android.accounts.NetworkErrorException;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import com.smartadserver.android.smartcmp.Constants;
 import com.smartadserver.android.smartcmp.model.Language;
 import com.smartadserver.android.smartcmp.model.VendorList;
 import com.smartadserver.android.smartcmp.model.VendorListURL;
@@ -24,6 +28,10 @@ import java.util.TimerTask;
 @SuppressWarnings("WeakerAccess")
 public class VendorListManager {
 
+    // The application context.
+    @NonNull
+    private Context context;
+
     // The main vendor list manager listener.
     @NonNull
     private VendorListManagerListener listener;
@@ -31,8 +39,8 @@ public class VendorListManager {
     // The interval between each refresh (in millisecond).
     private long refreshInterval;
 
-    // the time interval to observe before retrying to download the vendor list after a failure at previous attempt
-    private long retryInterval;
+    // The time interval between two refresh attempts.
+    private long pollInterval;
 
     // Representation of the vendor list URL.
     @NonNull
@@ -41,39 +49,39 @@ public class VendorListManager {
     // The timer used to schedule the automatic refresh.
     private Timer timer;
 
-    // The Date of the last vendor list refresh.
-    private Date lastRefreshDate;
-
     // flag to mark that a download attempt of the vendors list is currently in progress
     private boolean downloadingVendorsList = false;
 
     /**
      * Initialize a VendorListManager that will download only the latest version of the vendor list.
      *
+     * @param context         The application context.
      * @param listener        The vendor list manager listener to call when the vendor list is downloaded or failed to be downloaded.
      * @param refreshInterval Time between each refresh.
-     * @param retryInterval   Time between each unsuccessful refresh.
+     * @param pollInterval    Time between each refresh attempt.
      * @param language        The language wanted for the vendor list. Needs to be ISO-639-1.
      * @throws IllegalArgumentException if given language is not ISO 639-1.
      */
-    public VendorListManager(@NonNull VendorListManagerListener listener, long refreshInterval, long retryInterval, @Nullable Language language) throws IllegalArgumentException {
-        this(listener, refreshInterval, retryInterval, language, -1);
+    public VendorListManager(@NonNull Context context, @NonNull VendorListManagerListener listener, long refreshInterval, long pollInterval, @Nullable Language language) throws IllegalArgumentException {
+        this(context, listener, refreshInterval, pollInterval, language, -1);
     }
 
     /**
      * Initialize a VendorListManager that will download only the given version number of the vendor list.
      *
+     * @param context           The application context.
      * @param listener          The vendor list manager listener to call when the vendor list is downloaded or failed to be downloaded.
      * @param refreshInterval   Time between each refresh.
-     * @param retryInterval     Time between each unsuccessful refresh.
+     * @param pollInterval      Time between each refresh attempt.
      * @param language          The language wanted for the vendor list. Needs to be ISO-639-1.
      * @param vendorListVersion The wanted version of the vendor list (or the latest if -1).
      * @throws IllegalArgumentException if given language is not ISO 639-1.
      */
-    public VendorListManager(@NonNull VendorListManagerListener listener, long refreshInterval, long retryInterval, @Nullable Language language, int vendorListVersion) throws IllegalArgumentException {
+    public VendorListManager(@NonNull Context context, @NonNull VendorListManagerListener listener, long refreshInterval, long pollInterval, @Nullable Language language, int vendorListVersion) throws IllegalArgumentException {
+        this.context = context;
         this.listener = listener;
         this.refreshInterval = refreshInterval;
-        this.retryInterval = retryInterval;
+        this.pollInterval = pollInterval;
         vendorListURL = vendorListVersion == -1 ? new VendorListURL(language) : new VendorListURL(vendorListVersion, language);
     }
 
@@ -128,8 +136,6 @@ public class VendorListManager {
         return new JSONAsyncTaskListener() {
             @Override
             public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject vendorListJSON) {
-                long delay = retryInterval;
-
                 try {
                     // We succeed to retrieve the vendor list JSON.
                     // Now, we try to download the localized vendor list JSON.
@@ -138,22 +144,25 @@ public class VendorListManager {
                     //noinspection unchecked
                     jsonAsyncTask.execute(vendorListURL.getLocalizedURL());
 
-                    // Everything succeed, so we store the last vendor list refresh date.
-                    lastRefreshDate = new Date();
-                    delay = refreshInterval;
+                    // Everything succeed, so we setup the next refresh date to the shared preferences.
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putLong(Constants.VendorList.NextRefreshDate, new Date().getTime() + refreshInterval);
+                    editor.apply();
+
                 } catch (Exception e) {
                     downloadingVendorsList = false;
                     listener.onVendorListUpdateFail(e);
                 }
 
-                scheduleTimerIfNeeded(delay);
+                scheduleTimerIfNeeded();
             }
 
             @Override
             public void JSONAsyncTaskDidFailDownloadingJSONObject() {
                 downloadingVendorsList = false;
                 listener.onVendorListUpdateFail(new NetworkErrorException());
-                scheduleTimerIfNeeded(retryInterval);
+                scheduleTimerIfNeeded();
             }
         };
     }
@@ -195,14 +204,13 @@ public class VendorListManager {
 
         timer = new Timer();
 
-        // to force refresh, simply erase the last refresh date
         if (forceFirstRefresh) {
-            lastRefreshDate = null;
+            // force refresh of the vendor list.
+            refreshVendorList();
+        } else {
+            // refresh the vendor list if needed.
+            refreshVendorListIfNeeded();
         }
-
-        // refresh the vendor list if needed.
-        refreshVendorListIfNeeded();
-
     }
 
     /**
@@ -218,29 +226,26 @@ public class VendorListManager {
      * Reset the timer to refresh the vendor list sooner but not immediately.
      */
     public void resetTimer() {
-        // Reset the timer
-        timer.cancel();
-        timer = new Timer();
-
-        // reschedule the timer to refresh the vendor sooner.
-        scheduleTimerIfNeeded(retryInterval);
+        // Remove the nextRefreshDate from the SharedPreferences to force the refresh on the next poll attempts.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(Constants.VendorList.NextRefreshDate);
+        editor.apply();
     }
 
     /**
      * Refresh the vendor list from network only if needed.
      */
     private void refreshVendorListIfNeeded() {
-        // Compute the time before the next needed refresh.
-        long remainingTime = 0;
-        if (lastRefreshDate != null) {
-            remainingTime = lastRefreshDate.getTime() + refreshInterval - new Date().getTime();
-        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Date currentDate = new Date();
+        long nextRefreshDate = prefs.getLong(Constants.VendorList.NextRefreshDate, 0);
 
-        //Need to refresh as we have reached the refresh date.
-        if (remainingTime <= 0) {
+        // If the nextRefreshDate is reached we refresh the vendor list
+        if (currentDate.getTime() > nextRefreshDate) {
             refreshVendorList();
         } else {
-            scheduleTimerIfNeeded(remainingTime);
+            scheduleTimerIfNeeded();
         }
     }
 
@@ -287,14 +292,14 @@ public class VendorListManager {
     /**
      * Schedule the timer only if automatic refresh is enable.
      */
-    private void scheduleTimerIfNeeded(long delay) {
+    private void scheduleTimerIfNeeded() {
         if (timer != null) {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     refreshVendorListIfNeeded();
                 }
-            }, delay);
+            }, pollInterval);
         }
     }
 }
