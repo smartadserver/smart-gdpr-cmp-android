@@ -100,7 +100,7 @@ public class VendorListManagerTest {
         };
 
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 100, 10, new Language("en")) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 100, 10, new Language("en")) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
@@ -134,7 +134,7 @@ public class VendorListManagerTest {
             }
         };
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 1000, 500, null) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 1000, 500, null) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
@@ -197,7 +197,7 @@ public class VendorListManagerTest {
             }
         };
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 1000, 200, new Language("en")) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 1000, 200, new Language("en")) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
@@ -238,7 +238,7 @@ public class VendorListManagerTest {
             }
         };
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 1000, 500, null) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 1000, 500, null) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
@@ -280,7 +280,7 @@ public class VendorListManagerTest {
             }
         };
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 1000, 500, new Language("fr")) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 1000, 500, new Language("fr")) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
@@ -340,7 +340,7 @@ public class VendorListManagerTest {
             }
         };
 
-        VendorListManager vlManager = new VendorListManager(mockListener, 1000, 500, new Language("fr")) {
+        VendorListManager vlManager = new VendorListManager(InstrumentationRegistry.getContext(), mockListener, 1000, 500, new Language("fr")) {
             @Override
             protected JSONAsyncTask getNewJSONAsyncTaskForVendorList(@NonNull JSONAsyncTaskListener listener) {
                 return new MockJSONAsyncTask(listener) {
