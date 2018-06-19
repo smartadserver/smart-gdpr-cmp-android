@@ -19,7 +19,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.smartadserver.android.smartcmp.Constants;
 import com.smartadserver.android.smartcmp.activity.ConsentToolActivity;
 import com.smartadserver.android.smartcmp.consentstring.ConsentString;
-import com.smartadserver.android.smartcmp.exception.UnknownVersionNumberException;
 import com.smartadserver.android.smartcmp.model.ConsentToolConfiguration;
 import com.smartadserver.android.smartcmp.model.Language;
 import com.smartadserver.android.smartcmp.model.VendorList;
@@ -310,10 +309,11 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
+     * Note: Package private for test purpose.
      * @return The consent string.
      */
     @SuppressWarnings("unused")
-    public ConsentString getConsentString() {
+    ConsentString getConsentString() {
         return consentString;
     }
 
