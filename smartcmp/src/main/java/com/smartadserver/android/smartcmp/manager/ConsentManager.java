@@ -308,6 +308,15 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
+     * Note: Package private for test purpose.
+     * @return The consent string.
+     */
+    @SuppressWarnings("unused")
+    ConsentString getConsentString() {
+        return consentString;
+    }
+
+    /**
      * Update the ConsentString using the given Base64URL encoded consent string.
      *
      * @param base64URLEncodedConsentString The base64URL encoded consent string.
