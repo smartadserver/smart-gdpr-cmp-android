@@ -618,33 +618,45 @@ public class ConsentManager implements VendorListManagerListener {
         if (consentString != null) {
 
             // If consent string has a different version than vendor list, ask for consent tool display
-            if (consentString.getVendorListVersion() != lastVendorList.getVersion() && (usedVendorList == null || consentString.getVendorListVersion() != usedVendorList.getVersion())) {
+            if (consentString.getVendorListVersion() != lastVendorList.getVersion()) {
 
-                // Fetching the old vendor list to migrate the consent string.
-                // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
-                vendorListManager.getVendorList(consentString.getVendorListVersion(), new VendorListManagerListener() {
-                    @Override
-                    public void onVendorListUpdateSuccess(@NonNull VendorList previousVendorList) {
-                        usedVendorList = previousVendorList;
+                // Retrieve the lastDisplayUIDate from the shared preferences.
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
+                Date currentDate = new Date();
 
-                        // Retrieve the lastDisplayUIDate from the shared preferences.
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                        long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
-                        Date currentDate = new Date();
+                // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
+                final boolean shouldShowConsentTool = currentDate.getTime() > nextUIDisplayDate;
 
-                        // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
-                        if (currentDate.getTime() > nextUIDisplayDate) {
-                            handleVendorListChanged();
+                // If we do not have the vendor list used by the current consent string, we try to download it
+                if (usedVendorList == null || consentString.getVendorListVersion() != usedVendorList.getVersion()) {
+
+                    // Fetching the old vendor list to migrate the consent string.
+                    // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
+                    vendorListManager.getVendorList(consentString.getVendorListVersion(), new VendorListManagerListener() {
+                        @Override
+                        public void onVendorListUpdateSuccess(@NonNull VendorList previousVendorList) {
+                            usedVendorList = previousVendorList;
+
+                            if (shouldShowConsentTool) {
+                                handleVendorListChanged();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onVendorListUpdateFail(@NonNull Exception e) {
-                        // Unable to retrieve old vendor list version.
-                        // Remove next refresh date to force the refresh in the next poll refresh.
-                        vendorListManager.resetTimer();
+                        @Override
+                        public void onVendorListUpdateFail(@NonNull Exception e) {
+                            // Unable to retrieve old vendor list version.
+                            // Remove next refresh date to force the refresh in the next poll refresh.
+                            vendorListManager.resetTimer();
+                        }
+                    });
+                } else {
+
+                    // We already have the vendor list used by the consent string, so we show the consent tool if needed.
+                    if (shouldShowConsentTool) {
+                        handleVendorListChanged();
                     }
-                });
+                }
             }
         } else { // Consent string does not exist, ask for consent tool display.
             handleVendorListChanged();
