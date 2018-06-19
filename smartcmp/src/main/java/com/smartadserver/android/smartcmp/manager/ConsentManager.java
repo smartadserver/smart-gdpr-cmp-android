@@ -325,6 +325,21 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
+     * Check if the consent tool can be presented.
+     *
+     * Note: the consent tool cannot be displayed if:
+     *  - you haven't called the configure() method first
+     *  - the consent tool is already displayed
+     *  - the vendor list has not been retrieved yet (or can't be retrieved for the moment)
+     *
+     * @return true if presenting the consent tool with the showConsentTool() method will be successful, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public boolean canShowConsentTool() {
+        return isConfigured && !consentToolIsShown && lastVendorList != null;
+    }
+
+    /**
      * Update the ConsentString using the given Base64URL encoded consent string.
      *
      * @param base64URLEncodedConsentString The base64URL encoded consent string.
