@@ -546,28 +546,22 @@ public class ConsentManager implements VendorListManagerListener {
                 // If the 'Limited Ad Tracking' is disable on the device, or if the 'Limited Ad Tracking' is enable but the publisher
                 // wants to handle the display himself...
                 if (!isLATEnable || showConsentToolIfLAT) {
-                    // Retrieve the nextDisplayUIDate from the shared preferences.
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                    long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
-                    Date currentDate = new Date();
 
-                    // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
-                    if (currentDate.getTime() > nextUIDisplayDate) {
+                    migrateConsentStringIfNeeded();
 
-                        migrateConsentStringIfNeeded();
-
-                        if (listener != null) {
-                            // The listener is called so the publisher can ask for user's consent.
-                            listener.onShowConsentToolRequest(consentString, lastVendorList);
-                        } else {
-                            // There is no listener so the CMP asked for user's consent automatically.
-                            showConsentTool();
-                        }
-
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putLong(LAST_UI_DISPLAY_DATE_KEY, currentDate.getTime());
-                        editor.apply();
+                    if (listener != null) {
+                        // The listener is called so the publisher can ask for user's consent.
+                        listener.onShowConsentToolRequest(consentString, lastVendorList);
+                    } else {
+                        // There is no listener so the CMP asked for user's consent automatically.
+                        showConsentTool();
                     }
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putLong(LAST_UI_DISPLAY_DATE_KEY, new Date().getTime());
+                    editor.apply();
+
                 } else {
                     // If 'Limited Ad Tracking' is enabled and the publisher doesn't want to handle it itself, a consent string with no
                     // consent (for all vendors / purposes) is generated and stored.
@@ -632,7 +626,16 @@ public class ConsentManager implements VendorListManagerListener {
                     @Override
                     public void onVendorListUpdateSuccess(@NonNull VendorList previousVendorList) {
                         usedVendorList = previousVendorList;
-                        handleVendorListChanged();
+
+                        // Retrieve the lastDisplayUIDate from the shared preferences.
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                        long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
+                        Date currentDate = new Date();
+
+                        // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
+                        if (currentDate.getTime() > nextUIDisplayDate) {
+                            handleVendorListChanged();
+                        }
                     }
 
                     @Override
