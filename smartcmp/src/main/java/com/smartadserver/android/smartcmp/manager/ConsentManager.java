@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.VectorEnabledTintResources;
 import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -19,7 +18,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.smartadserver.android.smartcmp.Constants;
 import com.smartadserver.android.smartcmp.activity.ConsentToolActivity;
 import com.smartadserver.android.smartcmp.consentstring.ConsentString;
-import com.smartadserver.android.smartcmp.exception.UnknownVersionNumberException;
 import com.smartadserver.android.smartcmp.model.ConsentToolConfiguration;
 import com.smartadserver.android.smartcmp.model.Language;
 import com.smartadserver.android.smartcmp.model.VendorList;
@@ -475,6 +473,8 @@ public class ConsentManager implements VendorListManagerListener {
         // Start ConsentToolActivity
         Intent intent = new Intent(context, ConsentToolActivity.class);
 
+        migrateConsentStringIfNeeded();
+
         ConsentString consentString = this.consentString == null ? ConsentString.consentStringWithFullConsent(0, language, lastVendorList) : this.consentString;
 
         intent.putExtra("consent_string", consentString);
@@ -493,6 +493,18 @@ public class ConsentManager implements VendorListManagerListener {
     public void consentToolClosedWithConsentString(@NonNull String consentString) {
         consentToolIsShown = false;
         setConsentString(consentString);
+    }
+
+    /**
+     * Migrate the consent string from the used vendor list to the last vendor list.
+     */
+    private void migrateConsentStringIfNeeded() {
+        if (consentString != null && usedVendorList != null && lastVendorList != null
+                && consentString.getVendorListVersion() != lastVendorList.getVersion()
+                && usedVendorList.getVersion() == consentString.getVendorListVersion()) {
+            // Update the consent string with the last vendor list.
+            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, consentString);
+        }
     }
 
     /**
@@ -542,10 +554,7 @@ public class ConsentManager implements VendorListManagerListener {
                     // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
                     if (currentDate.getTime() > nextUIDisplayDate) {
 
-                        if (consentString != null && usedVendorList != null && consentString.getVendorListVersion() != lastVendorList.getVersion() && usedVendorList.getVersion() == consentString.getVendorListVersion()) {
-                            // Update the consent string with the last vendor list.
-                            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, consentString);
-                        }
+                        migrateConsentStringIfNeeded();
 
                         if (listener != null) {
                             // The listener is called so the publisher can ask for user's consent.
