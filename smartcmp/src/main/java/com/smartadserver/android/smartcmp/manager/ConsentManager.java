@@ -26,6 +26,7 @@ import com.smartadserver.android.smartcmp.vendorlist.VendorListManager;
 import com.smartadserver.android.smartcmp.vendorlist.VendorListManagerListener;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Singleton class that manages the GDPR user consent for the current device
@@ -34,8 +35,14 @@ import java.io.IOException;
 @SuppressWarnings("WeakerAccess")
 public class ConsentManager implements VendorListManagerListener {
 
-    // Default refresh interval in milliseconds (24 hours).
-    static private final long DEFAULT_REFRESH_INTERVAL = 86400000;
+    // The key used to store the next ui display date in the Shared Preferences.
+    static private final String LAST_UI_DISPLAY_DATE_KEY = "SmartCMP_LastUiDisplayDate";
+
+    // Default interval between each consent tool UI automatic display in milliseconds (7 days).
+    static private final long DEFAULT_UI_DISPLAY_INTERVAL = 604800000;
+
+    // Default refresh interval in milliseconds (1 hour).
+    static private final long DEFAULT_REFRESH_INTERVAL = 36000000;
 
     // Default retry interval (needed after an unsuccessful refresh) in milliseconds (1 minute).
     static private final long DEFAULT_RETRY_INTERVAL = 60000;
@@ -71,6 +78,9 @@ public class ConsentManager implements VendorListManagerListener {
     // The vendor list manager.
     private VendorListManager vendorListManager;
 
+    // The vendor list used by the current consent string.
+    private VendorList usedVendorList;
+
     // The last parsed vendor list.
     private VendorList lastVendorList;
 
@@ -80,6 +90,9 @@ public class ConsentManager implements VendorListManagerListener {
     // Whether or not the consent tool should show if user has limited ad tracking from his device's settings.
     // If false and LAT is On, no consent will be given for any purpose or vendors.
     private boolean showConsentToolIfLAT;
+
+    // Interval (in milliseconds) between each consent tool UI display.
+    private long uiDisplayInterval;
 
     // Whether or not the consent tool is shown.
     private boolean consentToolIsShown = false;
@@ -199,7 +212,7 @@ public class ConsentManager implements VendorListManagerListener {
      */
     @SuppressWarnings("SameParameterValue")
     public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration) {
-        configure(application, language, consentToolConfiguration, DEFAULT_LAT_VALUE, DEFAULT_REFRESH_INTERVAL);
+        configure(application, language, consentToolConfiguration, DEFAULT_LAT_VALUE, DEFAULT_UI_DISPLAY_INTERVAL);
     }
 
     /**
@@ -216,7 +229,7 @@ public class ConsentManager implements VendorListManagerListener {
      */
     @SuppressWarnings("unused")
     public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking) {
-        configure(application, language, consentToolConfiguration, showConsentToolWhenLimitedAdTracking, DEFAULT_REFRESH_INTERVAL);
+        configure(application, language, consentToolConfiguration, showConsentToolWhenLimitedAdTracking, DEFAULT_UI_DISPLAY_INTERVAL);
     }
 
     /**
@@ -230,9 +243,9 @@ public class ConsentManager implements VendorListManagerListener {
      * @param language                             An instance of Language reflecting the device's current language.
      * @param consentToolConfiguration             An instance of ConsentToolConfiguration containing all the strings needed by the UI.
      * @param showConsentToolWhenLimitedAdTracking Whether or not the consent tool UI should be shown if the user has checked Limit Ad Tracking in his device's preferences. If false, the UI will never be shown if user checked LAT and consent string will be formatted has "user does not give consent".
-     * @param refreshingInterval                   The interval in milliseconds te refresh the vendor list.
+     * @param uiDisplayInterval                    The interval in milliseconds between each CMP UI display.
      */
-    public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking, long refreshingInterval) {
+    public void configure(@NonNull Application application, @NonNull Language language, @NonNull ConsentToolConfiguration consentToolConfiguration, boolean showConsentToolWhenLimitedAdTracking, long uiDisplayInterval) {
         if (isConfigured) {
             logErrorMessage("ConsentManager is already configured for this session. You cannot reconfigure.");
             return;
@@ -249,6 +262,7 @@ public class ConsentManager implements VendorListManagerListener {
 
         this.language = language;
         this.showConsentToolIfLAT = showConsentToolWhenLimitedAdTracking;
+        this.uiDisplayInterval = uiDisplayInterval;
 
         // Check in preferences for already existing consent string.
         String rawConsentString = readStringFromSharedPreferences(Constants.IABConsentKeys.ConsentString, null);
@@ -260,7 +274,7 @@ public class ConsentManager implements VendorListManagerListener {
         }
 
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
-        vendorListManager = new VendorListManager(this, refreshingInterval, DEFAULT_RETRY_INTERVAL, language);
+        vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
         vendorListManager.startAutomaticRefresh(true);
     }
 
@@ -483,6 +497,8 @@ public class ConsentManager implements VendorListManagerListener {
         // Start ConsentToolActivity
         Intent intent = new Intent(context, ConsentToolActivity.class);
 
+        migrateConsentStringIfNeeded();
+
         ConsentString consentString = this.consentString == null ? ConsentString.consentStringWithFullConsent(0, language, lastVendorList) : this.consentString;
 
         intent.putExtra("consent_string", consentString);
@@ -501,6 +517,18 @@ public class ConsentManager implements VendorListManagerListener {
     public void consentToolClosedWithConsentString(@NonNull String consentString) {
         consentToolIsShown = false;
         setConsentString(consentString);
+    }
+
+    /**
+     * Migrate the consent string from the used vendor list to the last vendor list.
+     */
+    private void migrateConsentStringIfNeeded() {
+        if (consentString != null && usedVendorList != null && lastVendorList != null
+                && consentString.getVendorListVersion() != lastVendorList.getVersion()
+                && usedVendorList.getVersion() == consentString.getVendorListVersion()) {
+            // Update the consent string with the last vendor list.
+            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, consentString);
+        }
     }
 
     /**
@@ -542,6 +570,9 @@ public class ConsentManager implements VendorListManagerListener {
                 // If the 'Limited Ad Tracking' is disable on the device, or if the 'Limited Ad Tracking' is enable but the publisher
                 // wants to handle the display himself...
                 if (!isLATEnable || showConsentToolIfLAT) {
+
+                    migrateConsentStringIfNeeded();
+
                     if (listener != null) {
                         // The listener is called so the publisher can ask for user's consent.
                         listener.onShowConsentToolRequest(consentString, lastVendorList);
@@ -549,6 +580,12 @@ public class ConsentManager implements VendorListManagerListener {
                         // There is no listener so the CMP asked for user's consent automatically.
                         showConsentTool();
                     }
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putLong(LAST_UI_DISPLAY_DATE_KEY, new Date().getTime());
+                    editor.apply();
+
                 } else {
                     // If 'Limited Ad Tracking' is enabled and the publisher doesn't want to handle it itself, a consent string with no
                     // consent (for all vendors / purposes) is generated and stored.
@@ -607,22 +644,43 @@ public class ConsentManager implements VendorListManagerListener {
             // If consent string has a different version than vendor list, ask for consent tool display
             if (consentString.getVendorListVersion() != lastVendorList.getVersion()) {
 
-                // Fetching the old vendor list to migrate the consent string.
-                // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
-                vendorListManager.getVendorList(consentString.getVendorListVersion(), new VendorListManagerListener() {
-                    @Override
-                    public void onVendorListUpdateSuccess(@NonNull VendorList lastVendorList) {
-                        consentString = ConsentString.consentStringFromUpdatedVendorList(vendorList, lastVendorList, consentString);
+                // Retrieve the lastDisplayUIDate from the shared preferences.
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
+                Date currentDate = new Date();
+
+                // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
+                final boolean shouldShowConsentTool = currentDate.getTime() > nextUIDisplayDate;
+
+                // If we do not have the vendor list used by the current consent string, we try to download it
+                if (usedVendorList == null || consentString.getVendorListVersion() != usedVendorList.getVersion()) {
+
+                    // Fetching the old vendor list to migrate the consent string.
+                    // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
+                    vendorListManager.getVendorList(consentString.getVendorListVersion(), new VendorListManagerListener() {
+                        @Override
+                        public void onVendorListUpdateSuccess(@NonNull VendorList previousVendorList) {
+                            usedVendorList = previousVendorList;
+
+                            if (shouldShowConsentTool) {
+                                handleVendorListChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onVendorListUpdateFail(@NonNull Exception e) {
+                            // Unable to retrieve old vendor list version.
+                            // Remove next refresh date to force the refresh in the next poll refresh.
+                            vendorListManager.resetTimer();
+                        }
+                    });
+                } else {
+
+                    // We already have the vendor list used by the consent string, so we show the consent tool if needed.
+                    if (shouldShowConsentTool) {
                         handleVendorListChanged();
                     }
-
-                    @Override
-                    public void onVendorListUpdateFail(@NonNull Exception e) {
-                        // Unable to retrieve old vendor list version.
-                        // Remove next refresh date to force the refresh in the next poll refresh.
-                        vendorListManager.resetTimer();
-                    }
-                });
+                }
             }
         } else { // Consent string does not exist, ask for consent tool display.
             handleVendorListChanged();
