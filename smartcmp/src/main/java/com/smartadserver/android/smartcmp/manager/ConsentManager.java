@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -314,6 +315,28 @@ public class ConsentManager implements VendorListManagerListener {
     @SuppressWarnings("unused")
     public ConsentString getConsentString() {
         return consentString;
+    }
+
+    /**
+     * @return the last vendor list fetched.
+     */
+    public @Nullable VendorList getVendorList() {
+        return lastVendorList;
+    }
+
+    /**
+     * Check if the consent tool can be presented.
+     *
+     * Note: the consent tool cannot be displayed if:
+     *  - you haven't called the configure() method first
+     *  - the consent tool is already displayed
+     *  - the vendor list has not been retrieved yet (or can't be retrieved for the moment)
+     *
+     * @return true if presenting the consent tool with the showConsentTool() method will be successful, false otherwise.
+     */
+    @SuppressWarnings("unused")
+    public boolean canShowConsentTool() {
+        return isConfigured && !consentToolIsShown && lastVendorList != null;
     }
 
     /**
