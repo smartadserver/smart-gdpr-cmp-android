@@ -35,7 +35,7 @@ import java.util.Date;
 public class ConsentManager implements VendorListManagerListener {
 
     // The key used to store the next ui display date in the Shared Preferences.
-    static private final String NEXT_UI_DISPLAY_DATE_KEY = "SmartCMP_NextUiDisplayDate";
+    static private final String LAST_UI_DISPLAY_DATE_KEY = "SmartCMP_LastUiDisplayDate";
 
     // Default interval between each consent tool UI automatic display in milliseconds (7 days).
     static private final long DEFAULT_UI_DISPLAY_INTERVAL = 604800000;
@@ -548,7 +548,7 @@ public class ConsentManager implements VendorListManagerListener {
                 if (!isLATEnable || showConsentToolIfLAT) {
                     // Retrieve the nextDisplayUIDate from the shared preferences.
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                    long nextUIDisplayDate = prefs.getLong(NEXT_UI_DISPLAY_DATE_KEY, 0);
+                    long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
                     Date currentDate = new Date();
 
                     // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
@@ -565,7 +565,7 @@ public class ConsentManager implements VendorListManagerListener {
                         }
 
                         SharedPreferences.Editor editor = prefs.edit();
-                        editor.putLong(NEXT_UI_DISPLAY_DATE_KEY, currentDate.getTime() + uiDisplayInterval);
+                        editor.putLong(LAST_UI_DISPLAY_DATE_KEY, currentDate.getTime());
                         editor.apply();
                     }
                 } else {
