@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 // Current version of the cmp
-def cmpVersion = 6
-def cmpVersionName = "6"
+def cmpVersion = 7
+def cmpVersionName = "7"
 def mavenPassword = System.getenv("MAVEN_PASSWORD")
 
 group = "com.smartadserver.android"
