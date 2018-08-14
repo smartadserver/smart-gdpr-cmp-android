@@ -209,7 +209,9 @@ public class VendorListManager {
      * Disable the automatic refresh by cancelling the timer.
      */
     public void stopAutomaticRefresh() {
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         downloadingVendorsList = false;
         timer = null;
     }
@@ -219,7 +221,9 @@ public class VendorListManager {
      */
     public void resetTimer() {
         // Reset the timer
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         timer = new Timer();
 
         // reschedule the timer to refresh the vendor sooner.
