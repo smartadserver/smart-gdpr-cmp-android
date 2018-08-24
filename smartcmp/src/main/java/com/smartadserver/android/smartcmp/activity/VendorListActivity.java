@@ -98,8 +98,10 @@ public class VendorListActivity extends AppCompatActivity {
             vendorStatusSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                    // Create a new consentString by adding or removing the vendor
-                    consentString = checked ? ConsentString.consentStringByAddingVendorConsent(vendor.getId(), consentString) : ConsentString.consentStringByRemovingVendorConsent(vendor.getId(), consentString);
+                    if (consentString.isVendorAllowed(vendor.getId()) != checked) {
+                        // Create a new consentString by adding or removing the vendor
+                        consentString = checked ? ConsentString.consentStringByAddingVendorConsent(vendor.getId(), consentString) : ConsentString.consentStringByRemovingVendorConsent(vendor.getId(), consentString);
+                    }
                 }
             });
 
