@@ -1,0 +1,72 @@
+apply plugin: 'com.android.library'
+
+// Current version of the cmp
+def cmpVersion = 7
+def cmpVersionName = "7"
+def mavenPassword = System.getenv("MAVEN_PASSWORD")
+
+group = "com.fidzup.android"
+version cmpVersionName
+
+// packagecloud.io requirement
+apply plugin: 'maven'
+
+// packagecloud.io requirement
+configurations {
+    deployerJars
+}
+
+uploadArchives {
+    if (project.hasProperty('isSnapshot') && project.findProperty('isSnapshot') == 'true') {
+        version = version + "-SNAPSHOT"
+    }
+
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "packagecloud+https://packagecloud.io/fidzup/android") {
+            authentication(password: mavenPassword)
+        }
+    }
+}
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode cmpVersion
+        versionName cmpVersionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        archivesBaseName = "fidzupcmp"
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+
+    // packagecloud.io requirement
+    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

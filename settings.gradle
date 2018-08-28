@@ -1,1 +1,1 @@
-include ':app', ':smartcmp'
+include ':app', ':fidzupcmp'
