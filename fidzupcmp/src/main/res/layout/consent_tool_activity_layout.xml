@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/fidzup_logo"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="70dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -16,40 +16,49 @@
 
     <TextView
         android:id="@+id/main_textview"
+        android:layout_gravity="center_horizontal|center"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/manage_button"
+        android:layout_above="@+id/close_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fidzup_logo"
-        android:layout_margin="15dp" />
-
-    <Button
-        android:id="@+id/manage_button"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="0dp"/>
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp" />
 
     <Button
         android:id="@+id/close_button"
         android:layout_width="match_parent"
         android:layout_above="@+id/close_refuse_button"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
         android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textStyle="bold"
         android:textColor="#FFF" />
 
     <Button
         android:id="@+id/close_refuse_button"
         android:layout_width="match_parent"
         android:layout_above="@+id/manage_button"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
         android:layout_height="wrap_content"
+        android:textAllCaps="false"
         android:textColor="#FFF" />
+
+    <Button
+        android:id="@+id/manage_button"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:textAllCaps="false"
+        android:layout_marginTop="0dp"/>
 
 </RelativeLayout>
