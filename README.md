@@ -1,10 +1,11 @@
-# SmartCMP for Android
+# FidzupCMP for Android
 
 ## Introduction
 
-_SmartCMP for Android_ is an Android SDK allowing you to retrieve and store the user's consent for data usage in your Android apps.
+_FidzupCMP for Android_ is an Android SDK (a fork from the [SmartCMP](https://github.com/smartadserver/smart-gdpr-cmp-android)) allowing you to retrieve and store the user's consent for data usage in your Android apps.
 
-The purposes & vendors retrieval as well as the consent storage is compliant with [IAB Transparency and Consent Framework specifications](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework).
+The purposes & vendors retrieval as well as the consent storage is eventually compliant with [IAB Transparency and Consent Framework specifications](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework).
+It first comply with the french regulator on privacy. ([CNIL](https://www.cnil.fr))
 
 Retrieving user consent is mandatory in EU starting May 25th due to the _General Data Protection Regulation (GDPR)_.
 
@@ -18,29 +19,29 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 
 #### Using Gradle (recommended)
 
-1. In the main `build.gradle` of your project, declare the Smart repository
+1. In the main `build.gradle` of your project, declare the Fidzup repository
 
         allprojects {
             repositories {
-                // add the Smart repository
-                maven { url 'https://packagecloud.io/smartadserver/android/maven2' }
+                // add the Fidzup repository
+                maven { url 'https://packagecloud.io/fidzup/android/maven2' }
 
                 // …
             }
         }
 
-2. In the `build.gradle` file corresponding to your application module, you can now import the `SmartCMP` by declaring it in the _dependencies_ section
+2. In the `build.gradle` file corresponding to your application module, you can now import the `FidzupCMP` by declaring it in the _dependencies_ section
 
         dependencies {
             // …
 
-            // add SmartCMP
-            implementation 'com.smartadserver.android:smartcmp:7@aar'
+            // add FidzupCMP
+            implementation 'com.fidzup.android:cmp:7@aar'
         }
 
 #### From the Git repository
 
-Download this repository then add the `SmartCMP` module to your project through the _Project Structure_ menu.
+Download this repository then add the `FidzupCMP` module to your project through the _Project Structure_ menu.
 
 ### Integration
 
@@ -51,6 +52,7 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_home_screen_text,
                 R.string.cmp_home_screen_manage_consent_button_title,
                 R.string.cmp_home_screen_close_button_title,
+                R.string.cmp_home_screen_close_refuse_button_title,
                 R.string.cmp_consent_tool_preferences_appbar_subtitle,
                 R.string.cmp_consent_tool_preferences_save_button_title,
                 R.string.cmp_consent_tool_preferences_vendors_section_header,
@@ -71,7 +73,7 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_alert_dialog_negative_button_title,
                 R.string.cmp_alert_dialog_positive_button_title);
 
-Call the `configure()` method on `ConsentManager.getSharedInstance()` to start the CMP. A good place to configure the _SmartCMP_ is in the `Application` class of your app, in the `onCreate` method. Indeed, your `Application` instance is needed by the CMP: it will listen to your application entering background or foreground to avoid unnecessary network calls.
+Call the `configure()` method on `ConsentManager.getSharedInstance()` to start the CMP. A good place to configure the _FidzupCMP_ is in the `Application` class of your app, in the `onCreate` method. Indeed, your `Application` instance is needed by the CMP: it will listen to your application entering background or foreground to avoid unnecessary network calls.
 
     public class MyApplication extends Application {
         @Override
@@ -111,11 +113,11 @@ However, if you configure the CMP with the parameter `showConsentToolWhenLimited
 
 ## Known limitations
 
-The current version of _SmartCMP_ has the following limitations:
+The current version of _FidzupCMP_ has the following limitations:
 
 * The consent tool UI is not customizable (except for static texts). You can however build your own UI and display it in the `consentManagerRequestsToShowConsentTool` listener method using the `vendorList` and the `consentString` parameters.
 * _AndroidTV_ apps are not supported.
-* The IAB specification allows publishers to display only a subset of purposes & vendors using a _pubvendors.json_ file, stored on their own infrastructure. _SmartCMP_ does not implement this feature at this time.
+* The IAB specification allows publishers to display only a subset of purposes & vendors using a _pubvendors.json_ file, stored on their own infrastructure. _FidzupCMP_ does not implement this feature at this time.
 * No static texts are provided by default (you must provide them to `ConsentToolConfiguration`). The `homeScreenText` should be validated by your legal department.
 * _SmartCMP_ does not have any logic to know if GDPR applies or not based on user's location / age at this time. For the moment it is the publisher's responsibility to determine whether or not GDPR applies and if the consent tool UI should be shown to the user, as well as requesting permission to fetch location or other including / excluding criteria.
 
@@ -127,8 +129,8 @@ This software is distributed under the _Creative Commons Legal Code, Attribution
 
 Check the [LICENSE file](LICENSE) for more details.
 
-### Reusing SmartCMP ID
+### Reusing FidzupCMP ID
 
-The CMP ID _'33'_ used for consent string encoding is the CMP ID of _Smart AdServer_.
+The CMP ID _'1024'_ used for consent string encoding is the CMP ID of _Fidzup_.
 
-You can use this CMP ID as long as you don't alter the source code of _SmartCMP_. If you do modify the source code, **YOU MUST REGISTER YOUR FORK AS A NEW CMP and change the CMP ID** in `Constants.CMPInfos.ID`. You can register your forked CMP and obtain your own ID here: https://register.consensu.org/CMP
+You can use this CMP ID as long as you don't alter the source code of _FidzupCMP_. If you do modify the source code, **YOU MUST REGISTER YOUR FORK AS A NEW CMP and change the CMP ID** in `Constants.CMPInfos.ID`. You can register your forked CMP and obtain your own ID here: https://register.consensu.org/CMP
