@@ -35,8 +35,14 @@ public class VersionConfig implements Parcelable {
     // The number of bits used to encode the consentLanguage field.
     private int consentLanguageBitSize;
 
+    // The number of bits used to encode the editorVersion field.
+    private int editorVersionBitSize;
+
     // The number of bits used to encode the vendorListVersion field.
     private int vendorListVersionBitSize;
+
+    // The number of bits used to encode the editorPurposes field.
+    private int editorPurposesBitSize;
 
     // The number of bits used to encode the allowedPurposes field.
     private int allowedPurposesBitSize;
@@ -95,7 +101,9 @@ public class VersionConfig implements Parcelable {
                 cmpVersionBitSize = 12;
                 consentScreenBitSize = 6;
                 consentLanguageBitSize = 12;
+                editorVersionBitSize = 12;
                 vendorListVersionBitSize = 12;
+                editorPurposesBitSize = 24;
                 allowedPurposesBitSize = 24;
                 maxVendorIdBitSize = 16;
                 encodingTypeBitSize = 1;
@@ -175,10 +183,24 @@ public class VersionConfig implements Parcelable {
     }
 
     /**
+     * @return The number of bits used to encode the editorVersion field.
+     */
+    public int getEditorVersionBitSize() {
+        return editorVersionBitSize;
+    }
+
+    /**
      * @return The number of bits used to encode the vendorListVersion field.
      */
     public int getVendorListVersionBitSize() {
         return vendorListVersionBitSize;
+    }
+
+    /**
+     * @return The number of bits used to encode the editorPurposes field.
+     */
+    public int getEditorPurposesBitSize() {
+        return editorPurposesBitSize;
     }
 
     /**
@@ -302,7 +324,9 @@ public class VersionConfig implements Parcelable {
         dest.writeInt(this.cmpVersionBitSize);
         dest.writeInt(this.consentScreenBitSize);
         dest.writeInt(this.consentLanguageBitSize);
+        dest.writeInt(this.editorVersionBitSize);
         dest.writeInt(this.vendorListVersionBitSize);
+        dest.writeInt(this.editorPurposesBitSize);
         dest.writeInt(this.allowedPurposesBitSize);
         dest.writeInt(this.maxVendorIdBitSize);
         dest.writeInt(this.encodingTypeBitSize);
@@ -327,7 +351,9 @@ public class VersionConfig implements Parcelable {
         this.cmpVersionBitSize = in.readInt();
         this.consentScreenBitSize = in.readInt();
         this.consentLanguageBitSize = in.readInt();
+        this.editorVersionBitSize = in.readInt();
         this.vendorListVersionBitSize = in.readInt();
+        this.editorPurposesBitSize = in.readInt();
         this.allowedPurposesBitSize = in.readInt();
         this.maxVendorIdBitSize = in.readInt();
         this.encodingTypeBitSize = in.readInt();

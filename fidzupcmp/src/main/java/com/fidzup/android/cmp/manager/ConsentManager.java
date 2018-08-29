@@ -24,6 +24,9 @@ import com.fidzup.android.cmp.model.Language;
 import com.fidzup.android.cmp.model.VendorList;
 import com.fidzup.android.cmp.vendorlist.VendorListManager;
 import com.fidzup.android.cmp.vendorlist.VendorListManagerListener;
+import com.fidzup.android.cmp.model.Editor;
+import com.fidzup.android.cmp.editor.EditorManager;
+import com.fidzup.android.cmp.editor.EditorManagerListener;
 
 import java.io.IOException;
 import java.util.Date;
@@ -33,7 +36,7 @@ import java.util.Date;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ConsentManager implements VendorListManagerListener {
+public class ConsentManager implements VendorListManagerListener,EditorManagerListener {
 
     // The key used to store the next ui display date in the Shared Preferences.
     static private final String LAST_UI_DISPLAY_DATE_KEY = "FidzupCMP_LastUiDisplayDate";
@@ -74,6 +77,15 @@ public class ConsentManager implements VendorListManagerListener {
 
     // The consent string.
     private ConsentString consentString;
+
+    // The editor manager.
+    private EditorManager editorManager;
+
+    // The editor used by the current consent string.
+    private Editor usedEditor;
+
+    // The last parsed editor.
+    private Editor lastEditor;
 
     // The vendor list manager.
     private VendorListManager vendorListManager;
@@ -131,10 +143,13 @@ public class ConsentManager implements VendorListManagerListener {
                 handler.removeCallbacks(checkIfBackgroundRunnable);
             }
 
-            // if coming from a background state, we need to enable vendors list periodical refreshes
+            // if coming from a background state, we need to enable vendors list & editor periodical refreshes
             if (wasBackground) {
                 if (vendorListManager != null) {
                     vendorListManager.startAutomaticRefresh(false);
+                }
+                if (editorManager != null) {
+                    editorManager.startAutomaticRefresh(false);
                 }
             }
         }
@@ -160,6 +175,10 @@ public class ConsentManager implements VendorListManagerListener {
                         // suspend vendor list refreshes
                         if (vendorListManager != null) {
                             vendorListManager.stopAutomaticRefresh();
+                        }
+                        // suspend editor refreshes
+                        if (editorManager != null) {
+                            editorManager.stopAutomaticRefresh();
                         }
                     }
                 }
@@ -276,6 +295,9 @@ public class ConsentManager implements VendorListManagerListener {
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
         vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
         vendorListManager.startAutomaticRefresh(true);
+        // Instantiate the EditorManager and immediately trigger the automatic refresh.
+        editorManager = new EditorManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
+        editorManager.startAutomaticRefresh(true);
     }
 
     /**
@@ -338,6 +360,14 @@ public class ConsentManager implements VendorListManagerListener {
         return lastVendorList;
     }
 
+
+    /**
+     * @return the last editor fetched.
+     */
+    public @Nullable Editor getEditor() {
+        return lastEditor;
+    }
+
     /**
      * Check if the consent tool can be presented.
      *
@@ -383,6 +413,9 @@ public class ConsentManager implements VendorListManagerListener {
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedPurposeConsent, consentString.parsedPurposeConsents());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedVendorConsent, consentString.parsedVendorConsents());
 
+        // Store the consent string in the SharedPreferences.
+        saveStringInSharedPreferences(Constants.EditorConsentKeys.ParsedPurposeConsent, consentString.parsedEditorPurposeConsents());
+
         // Save the advertising consent status in the SharedPreferences.
         saveStringInSharedPreferences(Constants.AdvertisingConsentStatus.Key, consentString.isPurposeAllowed(Constants.AdvertisingConsentStatus.PurposeId) ? "1" : "0");
     }
@@ -403,10 +436,10 @@ public class ConsentManager implements VendorListManagerListener {
 
         if (this.consentString != null) {
             // The consent string is already set.
-            consentString = ConsentString.consentStringByAddingAllPurposeConsents(lastVendorList, this.consentString);
+            consentString = ConsentString.consentStringByAddingAllPurposeConsents(lastVendorList, lastEditor, this.consentString);
         } else {
             // The consent string is not set yet, so we create a consent string with full consent.
-            consentString = ConsentString.consentStringWithFullConsent(0, language, lastVendorList);
+            consentString = ConsentString.consentStringWithFullConsent(0, language, lastEditor, lastVendorList);
         }
 
         if (consentString == null) {
@@ -436,15 +469,15 @@ public class ConsentManager implements VendorListManagerListener {
 
         if (this.consentString != null) {
             // The consent string is already set.
-            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, this.consentString);
+            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, lastEditor, this.consentString);
         } else {
             // The consent string is not set yet.
 
             // First, create a consent string with full consent.
-            consentString = ConsentString.consentStringWithFullConsent(0, language, lastVendorList);
+            consentString = ConsentString.consentStringWithFullConsent(0, language, lastEditor, lastVendorList);
 
             // Then remove all purpose consents.
-            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, consentString);
+            consentString = ConsentString.consentStringByRemovingAllPurposeConsents(lastVendorList, lastEditor, consentString);
         }
 
         if (consentString == null) {
@@ -472,6 +505,19 @@ public class ConsentManager implements VendorListManagerListener {
     }
 
     /**
+     * Force an immediate refresh of the editor.
+     */
+    @SuppressWarnings("unused")
+    public void refreshEditor() {
+        if (!isConfigured) {
+            logErrorMessage("ConsentManager is not configured for this session. Please call ConsentManager.getSharedInstance().configure() first.");
+            return;
+        }
+
+        editorManager.refreshEditor();
+    }
+
+    /**
      * Present the consent tool UI.
      *
      * @return Whether the consent tool UI has been displayed or not.
@@ -492,17 +538,24 @@ public class ConsentManager implements VendorListManagerListener {
             return false;
         }
 
+        if (lastEditor == null) {
+            logErrorMessage("ConsentManager cannot show consent tool as no editor is available. Please wait.");
+            return false;
+        }
+
         consentToolIsShown = true;
 
         // Start ConsentToolActivity
         Intent intent = new Intent(context, ConsentToolActivity.class);
 
         migrateConsentStringIfNeeded();
+        migrateConsentStringForEditorIfNeeded();
 
-        ConsentString consentString = this.consentString == null ? ConsentString.consentStringWithFullConsent(0, language, lastVendorList) : this.consentString;
+        ConsentString consentString = this.consentString == null ? ConsentString.consentStringWithFullConsent(0, language, lastEditor, lastVendorList) : this.consentString;
 
         intent.putExtra("consent_string", consentString);
         intent.putExtra("vendor_list", lastVendorList);
+        intent.putExtra("editor", lastEditor);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
@@ -527,12 +580,88 @@ public class ConsentManager implements VendorListManagerListener {
                 && consentString.getVendorListVersion() != lastVendorList.getVersion()
                 && usedVendorList.getVersion() == consentString.getVendorListVersion()) {
             // Update the consent string with the last vendor list.
-            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, consentString);
+            consentString = ConsentString.consentStringFromUpdatedVendorList(lastVendorList, usedVendorList, lastEditor, consentString);
         }
     }
 
     /**
-     * Handle the reception of a new vendor list. Calling this method will either:
+     * Migrate the consent string from the used editor to the last editor.
+     */
+    private void migrateConsentStringForEditorIfNeeded() {
+        if (consentString != null && usedEditor != null && lastEditor != null
+                && consentString.getEditorVersion() != lastEditor.getVersion()
+                && usedEditor.getVersion() == consentString.getEditorVersion()) {
+            // Update the consent string with the last vendor list.
+            consentString = ConsentString.consentStringFromUpdatedEditor(lastVendorList, usedEditor, lastEditor, consentString);
+        }
+    }
+
+    /**
+     * Handle the reception of a new editor. Calling this method will either:
+     * - show the consent tool manager UI (if we don't have any listener set).
+     * - call the listener with the new editor.
+     * - generate a consent string without any consent if 'limited ad tracking' is enabled and the CMP is configured to handle it itself.
+     */
+    private void handleEditorChanged() {
+
+        // Fetching the 'Limited Ad Tracking' status must be done in a background thread. Making it in the main
+        // thread will lead to an IllegalStateException.
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                boolean isLATEnable;
+
+                try {
+                    // Checking the 'Limited Ad Tracking' status of the device.
+                    AdvertisingIdClient.Info adsInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
+                    isLATEnable = adsInfo.isLimitAdTrackingEnabled();
+
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // Google play services are not available, so the device does not have those services. Therefore we can consider the 'Limited Ad Tracking' is disabled.
+                    isLATEnable = false;
+
+                } catch (GooglePlayServicesRepairableException e) {
+                    // Google play services are not reachable. Therefore we can consider the 'Limited Ad Tracking' is disabled.
+                    isLATEnable = false;
+
+                } catch (IOException e) {
+                    // Unable to retrieve the Google Play Service. Cancel the refresh timer to retry as soon as possible.
+                    editorManager.resetTimer();
+                    return;
+                }
+
+
+                // If the 'Limited Ad Tracking' is disable on the device, or if the 'Limited Ad Tracking' is enable but the publisher
+                // wants to handle the display himself...
+                if (!isLATEnable || showConsentToolIfLAT) {
+
+                    migrateConsentStringForEditorIfNeeded();
+
+                    if (listener != null) {
+                        // The listener is called so the publisher can ask for user's consent.
+                        listener.onShowConsentToolRequest(consentString, lastVendorList, lastEditor);
+                    } else {
+                        // There is no listener so the CMP asked for user's consent automatically.
+                        showConsentTool();
+                    }
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor leditor = prefs.edit();
+                    leditor.putLong(LAST_UI_DISPLAY_DATE_KEY, new Date().getTime());
+                    leditor.apply();
+
+                } else {
+                    // If 'Limited Ad Tracking' is enabled and the publisher doesn't want to handle it itself, a consent string with no
+                    // consent (for all vendors / purposes) is generated and stored.
+                    setConsentString(ConsentString.consentStringWithNoConsent(0, language, lastEditor, lastVendorList));
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Handle the reception of a new vendor list or editor. Calling this method will either:
      * - show the consent tool manager UI (if we don't have any listener set).
      * - call the listener with the new vendor list.
      * - generate a consent string without any consent if 'limited ad tracking' is enabled and the CMP is configured to handle it itself.
@@ -575,7 +704,7 @@ public class ConsentManager implements VendorListManagerListener {
 
                     if (listener != null) {
                         // The listener is called so the publisher can ask for user's consent.
-                        listener.onShowConsentToolRequest(consentString, lastVendorList);
+                        listener.onShowConsentToolRequest(consentString, lastVendorList, lastEditor);
                     } else {
                         // There is no listener so the CMP asked for user's consent automatically.
                         showConsentTool();
@@ -589,7 +718,7 @@ public class ConsentManager implements VendorListManagerListener {
                 } else {
                     // If 'Limited Ad Tracking' is enabled and the publisher doesn't want to handle it itself, a consent string with no
                     // consent (for all vendors / purposes) is generated and stored.
-                    setConsentString(ConsentString.consentStringWithNoConsent(0, language, lastVendorList));
+                    setConsentString(ConsentString.consentStringWithNoConsent(0, language, lastEditor, lastVendorList));
                 }
             }
         }).start();
@@ -690,6 +819,68 @@ public class ConsentManager implements VendorListManagerListener {
     @Override
     public void onVendorListUpdateFail(@NonNull Exception e) {
         logErrorMessage("ConsentManager cannot retrieve vendors list because of an error \"" + e.getMessage() + "\". A new attempt will be made later.");
+    }
+
+    ///////////////////////////////////////
+    //// EditorListener implementation ////
+    ///////////////////////////////////////
+
+    @Override
+    public void onEditorUpdateSuccess(@NonNull final Editor editor) {
+        lastEditor = editor;
+
+        // If consent string exist
+        if (consentString != null) {
+
+            // If consent string has a different version than editor, ask for consent tool display
+            if (consentString.getEditorVersion() != lastEditor.getVersion()) {
+
+                // Retrieve the lastDisplayUIDate from the shared preferences.
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                long nextUIDisplayDate = prefs.getLong(LAST_UI_DISPLAY_DATE_KEY, 0) + uiDisplayInterval;
+                Date currentDate = new Date();
+
+                // If the nextUIDisplayDate is reached, then we show to consent tool or call the listener.
+                final boolean shouldShowConsentTool = currentDate.getTime() > nextUIDisplayDate;
+
+                // If we do not have the vendor list used by the current consent string, we try to download it
+                if (usedEditor == null || consentString.getEditorVersion() != usedEditor.getVersion()) {
+
+                    // Fetching the old vendor list to migrate the consent string.
+                    // Old purposes & vendors must keep their values, new one will be considered as accepted by default.
+                    editorManager.getEditor(consentString.getEditorVersion(), new EditorManagerListener() {
+                        @Override
+                        public void onEditorUpdateSuccess(@NonNull Editor previousEditor) {
+                            usedEditor = previousEditor;
+
+                            if (shouldShowConsentTool) {
+                                handleEditorChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onEditorUpdateFail(@NonNull Exception e) {
+                            // Unable to retrieve old editor version.
+                            // Remove next refresh date to force the refresh in the next poll refresh.
+                            editorManager.resetTimer();
+                        }
+                    });
+                } else {
+
+                    // We already have the vendor list used by the consent string, so we show the consent tool if needed.
+                    if (shouldShowConsentTool) {
+                        handleEditorChanged();
+                    }
+                }
+            }
+        } else { // Consent string does not exist, ask for consent tool display.
+            handleEditorChanged();
+        }
+    }
+
+    @Override
+    public void onEditorUpdateFail(@NonNull Exception e) {
+        logErrorMessage("ConsentManager cannot retrieve editor because of an error \"" + e.getMessage() + "\". A new attempt will be made later.");
     }
 
 }

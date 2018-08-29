@@ -9,6 +9,7 @@
 
     <!-- ConsentToolPreferencesActivity -->
     <string name="cmp_consent_tool_preferences_appbar_subtitle">Privacy preferences</string>
+    <string name="cmp_consent_tool_preferences_editor_section_header">Editor</string>
     <string name="cmp_consent_tool_preferences_purposes_section_header">Purposes</string>
     <string name="cmp_consent_tool_preferences_vendors_section_header">Vendors</string>
     <string name="cmp_consent_tool_preferences_allowed_purpose_text">yes</string>

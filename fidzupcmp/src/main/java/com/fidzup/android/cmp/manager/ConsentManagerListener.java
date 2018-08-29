@@ -2,6 +2,7 @@ package com.fidzup.android.cmp.manager;
 
 import com.fidzup.android.cmp.consentstring.ConsentString;
 import com.fidzup.android.cmp.model.VendorList;
+import com.fidzup.android.cmp.model.Editor;
 
 /**
  * Listener of CMPManager. This listener is optional for the ConsentManager.
@@ -18,6 +19,6 @@ public interface ConsentManagerListener {
      * ConsentManager configuration and if the user has enabled 'Limited Ad Tracking' in its device settings.
      * In this case, a consent string without any consent will be automatically generated and stored.
      */
-    void onShowConsentToolRequest(ConsentString consentString, VendorList vendorList);
+    void onShowConsentToolRequest(ConsentString consentString, VendorList vendorList, Editor editor);
 
 }

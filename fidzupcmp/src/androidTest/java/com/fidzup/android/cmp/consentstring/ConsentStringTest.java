@@ -7,6 +7,7 @@ import com.fidzup.android.cmp.Constants;
 import com.fidzup.android.cmp.exception.UnknownVersionNumberException;
 import com.fidzup.android.cmp.model.Language;
 import com.fidzup.android.cmp.model.VendorList;
+import com.fidzup.android.cmp.model.Editor;
 import com.fidzup.android.cmp.model.VersionConfig;
 import com.fidzup.android.cmp.util.DateUtils;
 
@@ -23,6 +24,8 @@ import java.util.Date;
 
 public class ConsentStringTest {
 
+    private Editor editor;
+    private Editor updatedEditor;
     private VendorList vendorList;
     private VendorList updatedVendorList;
 
@@ -57,6 +60,18 @@ public class ConsentStringTest {
         return vendorList;
     }
 
+    private Editor getEditor() {
+        if (editor == null) {
+            try {
+                editor = new Editor(getJSON("editor.json"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Should never happen
+            }
+        }
+        return editor;
+    }
+
     private VendorList getUpdatedVendorList() {
         if (updatedVendorList == null) {
             try {
@@ -78,6 +93,7 @@ public class ConsentStringTest {
                 5,
                 6,
                 new Language("en"),
+                1,
                 8,
                 9,
                 new ArrayList<>(Collections.singletonList(1)),
@@ -90,6 +106,7 @@ public class ConsentStringTest {
                 5,
                 6,
                 new Language("en"),
+                1,
                 8,
                 9,
                 new ArrayList<>(Collections.singletonList(1)),
@@ -102,6 +119,7 @@ public class ConsentStringTest {
                 5,
                 6,
                 new Language("fr"),
+                1,
                 9,
                 10,
                 new ArrayList<>(Arrays.asList(1, 2)),
@@ -127,6 +145,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
@@ -151,6 +170,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -173,6 +193,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -196,6 +217,7 @@ public class ConsentStringTest {
                     2,
                     3,
                     new Language("en"),
+                    1,
                     1,
                     6,
                     new ArrayList<>(Arrays.asList(1, 2)),
@@ -223,6 +245,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
@@ -246,6 +269,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                1,
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
@@ -274,6 +298,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
@@ -301,6 +326,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(2, 1)),
                 new ArrayList<>(Arrays.asList(4, 2, 1)),
@@ -325,6 +351,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(4, 2, 1)),
@@ -348,6 +375,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                1,
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
@@ -374,6 +402,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -399,6 +428,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                1,
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
@@ -443,6 +473,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -469,6 +500,7 @@ public class ConsentStringTest {
                     2,
                     3,
                     new Language("en"),
+                    1,
                     1,
                     6,
                     new ArrayList<>(Arrays.asList(1, 2)),
@@ -499,6 +531,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -521,6 +554,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                1,
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
@@ -545,6 +579,7 @@ public class ConsentStringTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -563,7 +598,7 @@ public class ConsentStringTest {
             Assert.fail("Date is null");
         }
 
-        ConsentString noConsentString = ConsentString.consentStringWithNoConsent(3, new Language("en"), getVendorList(), date);
+        ConsentString noConsentString = ConsentString.consentStringWithNoConsent(3, new Language("en"), getEditor(), getVendorList(), date);
 
         ConsentString expectedConsentString = new ConsentString(VersionConfig.getLatest(),
                 date,
@@ -572,6 +607,7 @@ public class ConsentStringTest {
                 Constants.CMPInfos.VERSION,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<Integer>(),
                 new ArrayList<Integer>());
@@ -584,7 +620,7 @@ public class ConsentStringTest {
     public void testConsentStringWithFullConsent() {
         Date date = DateUtils.dateFromString("2017-11-07T18:59:04.9Z");
 
-        ConsentString fullConsentString = ConsentString.consentStringWithFullConsent(3, new Language("en"), getVendorList(), date);
+        ConsentString fullConsentString = ConsentString.consentStringWithFullConsent(3, new Language("en"), getEditor(), getVendorList(), date);
 
         ConsentString expectedConsentString = new ConsentString(VersionConfig.getLatest(),
                 date,
@@ -593,6 +629,7 @@ public class ConsentStringTest {
                 Constants.CMPInfos.VERSION,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)),
                 new ArrayList<>(Arrays.asList(8, 12, 28, 9, 27, 25, 26, 1, 6, 30, 24, 29, 39, 11, 15, 4, 7)));
@@ -616,6 +653,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -627,11 +665,12 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getUpdatedVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2, 6, 7)),
                 new ArrayList<>(Arrays.asList(1, 2, 4, 40, 41, 42)));
 
-        ConsentString updatedConsentString = ConsentString.consentStringFromUpdatedVendorList(getUpdatedVendorList(), getVendorList(), consentString, updatedDate);
+        ConsentString updatedConsentString = ConsentString.consentStringFromUpdatedVendorList(getUpdatedVendorList(), getVendorList(), getEditor(), consentString, updatedDate);
 
         Assert.assertEquals(expectedConsentString, updatedConsentString);
     }
@@ -652,6 +691,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -663,6 +703,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -674,6 +715,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -701,6 +743,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -712,6 +755,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Collections.singletonList(2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -723,6 +767,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -750,6 +795,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -761,6 +807,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -786,6 +833,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -810,6 +858,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -821,6 +870,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<Integer>(),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -846,6 +896,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -870,6 +921,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -881,6 +933,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4, 6)));
@@ -892,6 +945,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -919,6 +973,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -930,6 +985,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)));
@@ -941,6 +997,7 @@ public class ConsentStringTest {
                 2,
                 3,
                 new Language("en"),
+                getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));

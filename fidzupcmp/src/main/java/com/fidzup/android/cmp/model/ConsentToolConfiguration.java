@@ -57,6 +57,11 @@ public class ConsentToolConfiguration {
     // Eg: "Save"
     private int consentManagementSaveButtonTitleStringRes;
 
+    // Text of the editor section header.
+    //
+    // Eg: "Editor"
+    private int consentManagementScreenEditorSectionHeaderTextStringRes;
+
     // Text of the vendors section header.
     //
     // Eg: "Vendors"
@@ -173,8 +178,9 @@ public class ConsentToolConfiguration {
      * @param homeScreenCloseRefuseButtonTitleStringRes                       Text of the button to refuse and close the consent tool directly.
      * @param consentManagementScreenTitleStringRes                           Text of the preferences app bar subtitle.
      * @param consentManagementSaveButtonTitleStringRes                       Text of the button that saves consent choice.
-     * @param consentManagementScreenVendorsSectionHeaderTextStringRes        Text of the vendors section header.
+     * @param consentManagementScreenEditorSectionHeaderTextStringRes         Text of the editor section header.
      * @param consentManagementScreenPurposesSectionHeaderTextStringRes       Text of the purposes section header.
+     * @param consentManagementScreenVendorsSectionHeaderTextStringRes        Text of the vendors section header.
      * @param consentManagementVendorsActivityAccessTextStringRes             Text to access the full vendor list.
      * @param consentManagementActivatedTextStringRes                         Text to display when a purpose is activated.
      * @param consentManagementDeactivatedTextStringRes                       Text to display when a purpose is deactivated.
@@ -199,8 +205,9 @@ public class ConsentToolConfiguration {
                                     @StringRes int homeScreenCloseRefuseButtonTitleStringRes,
                                     @StringRes int consentManagementScreenTitleStringRes,
                                     @StringRes int consentManagementSaveButtonTitleStringRes,
-                                    @StringRes int consentManagementScreenVendorsSectionHeaderTextStringRes,
+                                    @StringRes int consentManagementScreenEditorSectionHeaderTextStringRes,
                                     @StringRes int consentManagementScreenPurposesSectionHeaderTextStringRes,
+                                    @StringRes int consentManagementScreenVendorsSectionHeaderTextStringRes,
                                     @StringRes int consentManagementVendorsActivityAccessTextStringRes,
                                     @StringRes int consentManagementActivatedTextStringRes,
                                     @StringRes int consentManagementDeactivatedTextStringRes,
@@ -225,8 +232,9 @@ public class ConsentToolConfiguration {
         this.homeScreenCloseRefuseButtonTitleStringRes = homeScreenCloseRefuseButtonTitleStringRes;
         this.consentManagementScreenTitleStringRes = consentManagementScreenTitleStringRes;
         this.consentManagementSaveButtonTitleStringRes = consentManagementSaveButtonTitleStringRes;
-        this.consentManagementScreenVendorsSectionHeaderTextStringRes = consentManagementScreenVendorsSectionHeaderTextStringRes;
+        this.consentManagementScreenEditorSectionHeaderTextStringRes = consentManagementScreenEditorSectionHeaderTextStringRes;
         this.consentManagementScreenPurposesSectionHeaderTextStringRes = consentManagementScreenPurposesSectionHeaderTextStringRes;
+        this.consentManagementScreenVendorsSectionHeaderTextStringRes = consentManagementScreenVendorsSectionHeaderTextStringRes;
         this.consentManagementVendorsActivityAccessTextStringRes = consentManagementVendorsActivityAccessTextStringRes;
         this.consentManagementActivatedTextStringRes = consentManagementActivatedTextStringRes;
         this.consentManagementDeactivatedTextStringRes = consentManagementDeactivatedTextStringRes;
@@ -292,6 +300,13 @@ public class ConsentToolConfiguration {
      */
     public String getConsentManagementSaveButtonTitle() {
         return context.getString(consentManagementSaveButtonTitleStringRes);
+    }
+
+    /**
+     * @return Text of the editor section header.
+     */
+    public String getConsentManagementScreenEditorSectionHeaderText() {
+        return context.getString(consentManagementScreenEditorSectionHeaderTextStringRes);
     }
 
     /**

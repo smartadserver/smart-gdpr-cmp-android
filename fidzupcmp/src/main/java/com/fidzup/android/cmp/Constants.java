@@ -27,6 +27,15 @@ public class Constants {
         public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsents";
     }
 
+    // Custome Editor Keys for SharedPreferences storage.
+    @SuppressWarnings("unused")
+    public class EditorConsentKeys {
+        public static final String CMPPresent                     = "EditorConsent_CMPPresent";
+        public static final String SubjectToGDPR                  = "EditorConsent_SubjectToGDPR";
+        public static final String ConsentString                  = "EditorConsent_ConsentString";
+        public static final String ParsedPurposeConsent           = "EditorConsent_ParsedPurposeConsents";
+    }
+
     // The AdvertisingConsentStatus SharedPreferences key contains the current user consent for the advertising
     // purpose of the current vendor list.
     //
@@ -40,8 +49,18 @@ public class Constants {
         public static final String Key                            = "FidzupCMP_advertisingConsentStatus";
     }
 
-    // Vendor List configuration.
+    // Editor configuration.
+    public class Editor {
+        public static final String EditorDefaultEndPoint = "http://jira.fidzup.com/editor/editor.json";
+        public static final String EditorVersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
+
+        public static final String EditorDefaultLocalizedEndPoint       = "http://jira.fidzup.com/editor/editor-{language}.json";
+        public static final String EditorVersionedLocalizedEndPoint     = "https://vendorlist.consensu.org/purposes-{language}-{version}.json";
+    }
+
+        // Vendor List configuration.
     public class VendorList {
+
         public static final String DefaultEndPoint                = "https://vendorlist.consensu.org/vendorlist.json";
         public static final String VersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
 

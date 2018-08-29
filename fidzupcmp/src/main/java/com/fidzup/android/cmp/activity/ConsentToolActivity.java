@@ -51,6 +51,7 @@ public class ConsentToolActivity extends AppCompatActivity {
                 // Accept all new vendors or purposes.
                 ConsentString consentString = getIntent().getParcelableExtra("consent_string");
                 ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
+                ConsentManager.getSharedInstance().allowAllPurposes();
                 finish();
             }
         });
@@ -81,6 +82,7 @@ public class ConsentToolActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ConsentToolPreferencesActivity.class);
                 intent.putExtra("consent_string", getIntent().getParcelableExtra("consent_string"));
                 intent.putExtra("vendor_list", getIntent().getParcelableExtra("vendor_list"));
+                intent.putExtra("editor", getIntent().getParcelableExtra("editor"));
                 startActivityForResult(intent, PREFERENCES_REQUEST_CODE);
             }
         });

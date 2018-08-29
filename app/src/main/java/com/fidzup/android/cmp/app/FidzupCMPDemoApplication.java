@@ -9,6 +9,7 @@ import com.fidzup.android.cmp.manager.ConsentManagerListener;
 import com.fidzup.android.cmp.model.ConsentToolConfiguration;
 import com.fidzup.android.cmp.model.Language;
 import com.fidzup.android.cmp.model.VendorList;
+import com.fidzup.android.cmp.model.Editor;
 
 import java.util.Locale;
 
@@ -46,8 +47,9 @@ public class FidzupCMPDemoApplication extends MultiDexApplication implements Con
                 R.string.cmp_home_screen_close_refuse_button_title,
                 R.string.cmp_consent_tool_preferences_appbar_subtitle,
                 R.string.cmp_consent_tool_preferences_save_button_title,
-                R.string.cmp_consent_tool_preferences_vendors_section_header,
+                R.string.cmp_consent_tool_preferences_editor_section_header,
                 R.string.cmp_consent_tool_preferences_purposes_section_header,
+                R.string.cmp_consent_tool_preferences_vendors_section_header,
                 R.string.cmp_consent_tool_preferences_vendor_list_access_cell_text,
                 R.string.cmp_consent_tool_preferences_allowed_purpose_text,
                 R.string.cmp_consent_tool_preferences_disallowed_purpose_text,
@@ -66,8 +68,8 @@ public class FidzupCMPDemoApplication extends MultiDexApplication implements Con
     }
 
     @Override
-    public void onShowConsentToolRequest(ConsentString consentString, VendorList vendorList) {
-        Log.i("FidzupCMPDemoApplication", "CMP requested ConsentTool display.");
+    public void onShowConsentToolRequest(ConsentString consentString, VendorList vendorList, Editor editor) {
+        Log.i("FidzupCMPDemoAppli", "CMP requested ConsentTool display.");
 
         // You should display the consent tool UI, when user is ready…
         ConsentManager.getSharedInstance().showConsentTool();

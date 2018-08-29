@@ -114,6 +114,7 @@ public class ConsentManagerTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -146,6 +147,7 @@ public class ConsentManagerTest {
                 3,
                 new Language("en"),
                 1,
+                1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
@@ -177,6 +179,7 @@ public class ConsentManagerTest {
                 2,
                 3,
                 new Language("en"),
+                1,
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
