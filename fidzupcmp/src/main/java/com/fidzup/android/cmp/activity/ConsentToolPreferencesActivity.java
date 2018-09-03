@@ -1,5 +1,6 @@
 package com.fidzup.android.cmp.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -9,11 +10,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.fidzup.android.cmp.R;
@@ -23,6 +30,11 @@ import com.fidzup.android.cmp.model.ConsentToolConfiguration;
 import com.fidzup.android.cmp.model.Purpose;
 import com.fidzup.android.cmp.model.Editor;
 import com.fidzup.android.cmp.model.VendorList;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Consent tool preferences activity.
@@ -39,8 +51,11 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
     private ListLayoutAdapter adapter;
 
+    private ArrayList<Boolean> expandedCells = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.consent_tool_preferences_activity_layout);
 
@@ -65,7 +80,15 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
     private void bindViews() {
         // Setup the recycler view.
         RecyclerView recyclerView = findViewById(R.id.preferences_recycler_view);
+
+        int cellCount = vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
+        expandedCells = new ArrayList<>(cellCount);
+
+        while(cellCount-- > 0) expandedCells.add(false);
+        Log.d("dbg2", ""+expandedCells.size());
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         adapter = new ListLayoutAdapter();
         recyclerView.setAdapter(adapter);
 
@@ -140,16 +163,37 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
         private TextView mainTextView;
         private TextView secondaryTextView;
+        private Switch purposeSwitch;
+        boolean expanded = false;
 
-        PreferencesViewHolder(View itemView, boolean isTitle) {
+        PreferencesViewHolder(View itemView, boolean isPurposeCell, boolean isTitle) {
             super(itemView);
 
             if (isTitle) {
                 mainTextView = itemView.findViewById(R.id.title_textview);
+            } else if (isPurposeCell) {
+                mainTextView = itemView.findViewById(R.id.main_textview);
+                secondaryTextView = itemView.findViewById(R.id.secondary_textview);
+                purposeSwitch = itemView.findViewById(R.id.purpose_sw);
             } else {
                 mainTextView = itemView.findViewById(R.id.main_textview);
                 secondaryTextView = itemView.findViewById(R.id.secondary_textview);
             }
+        }
+
+        void toggleExpand() {
+            expand(!expanded);
+        }
+
+        void expand(boolean e) {
+            ViewGroup.LayoutParams params = itemView.getLayoutParams();
+            params.height = e ? ViewGroup.LayoutParams.WRAP_CONTENT : (int) (48.0 *
+                    itemView.getContext().getResources().getDisplayMetrics().density);
+
+            ImageView icon = (ImageView) itemView.findViewById(R.id.expand_icon);
+            icon.setImageResource(e ? R.drawable.ic_remove_black_24dp : R.drawable.ic_add_black_24dp);
+
+            this.expanded = e;
         }
 
         void setMainText(@NonNull String text) {
@@ -158,6 +202,14 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
         void setSecondaryText(@NonNull String text) {
             secondaryTextView.setText(text);
+        }
+
+        void setActive(boolean active) {
+            purposeSwitch.setChecked(active);
+        }
+
+        void setSwitchListener(CompoundButton.OnCheckedChangeListener listener) {
+            purposeSwitch.setOnCheckedChangeListener(listener);
         }
 
         void setOnClickListener(View.OnClickListener listener) {
@@ -206,18 +258,22 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
             if (viewType == VIEW_TYPE_PURPOSE_TITLE || viewType == VIEW_TYPE_VENDOR_TITLE || viewType == VIEW_TYPE_EDITOR_TITLE) {
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.title_cell, parent, false);
+            }
+            else if (viewType == VIEW_TYPE_PURPOSE_CELL || viewType == VIEW_TYPE_EDITOR_CELL) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.purpose_cell, parent, false);
+                isTitle = false;
             } else {
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.preferences_cell, parent, false);
                 isTitle = false;
             }
 
-            return new PreferencesViewHolder(v, isTitle);
+            return new PreferencesViewHolder(v, viewType == VIEW_TYPE_PURPOSE_CELL || viewType == VIEW_TYPE_EDITOR_CELL, isTitle);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int position) {
             int ViewType = getItemViewType(position);
-            PreferencesViewHolder holder = (PreferencesViewHolder) viewHolder;
+            final PreferencesViewHolder holder = (PreferencesViewHolder) viewHolder;
             ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
 
             switch (ViewType) {
@@ -225,26 +281,43 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                     holder.setMainText(config.getConsentManagementScreenEditorSectionHeaderText());
                     break;
 
+                case VIEW_TYPE_PURPOSE_TITLE:
+                    holder.setMainText(config.getConsentManagementScreenPurposesSectionHeaderText());
+                    break;
+
                 case VIEW_TYPE_EDITOR_CELL:
                     final Purpose purpose = editor.getPurposes().get(position - 1);
                     final boolean isPurposeEnable = consentString.isPurposeAllowed(purpose.getId());
 
                     holder.setMainText(purpose.getName());
-                    holder.setSecondaryText(isPurposeEnable ? config.getConsentManagementActivatedText() : config.getConsentManagementDeactivatedText());
+                    holder.setSecondaryText(purpose.getDescription());
+                    holder.setActive(isPurposeEnable);
+                    holder.expand(expandedCells.get(position));
 
                     holder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            expandedCells.set(position, !expandedCells.get(position));
+                            holder.expand(expandedCells.get(position));
+                            notifyItemChanged(position);
+                            /*
                             Intent intent = new Intent(getApplicationContext(), PurposeActivity.class);
                             intent.putExtra("purpose", purpose);
                             intent.putExtra("purpose_status", isPurposeEnable);
                             startActivityForResult(intent, PURPOSE_ACTIVITY_REQUEST_CODE);
+                            */
                         }
                     });
-                    break;
 
-                case VIEW_TYPE_PURPOSE_TITLE:
-                    holder.setMainText(config.getConsentManagementScreenPurposesSectionHeaderText());
+                    holder.setSwitchListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            consentString = b ?
+                                    ConsentString.consentStringByAddingPurposeConsent(purpose.getId(), consentString) :
+                                    ConsentString.consentStringByRemovingPurposeConsent(purpose.getId(), consentString);
+                        }
+                    });
+
                     break;
 
                 case VIEW_TYPE_PURPOSE_CELL:
@@ -252,15 +325,31 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                     final boolean isPurposeEnable_v = consentString.isPurposeAllowed(purpose_v.getId());
 
                     holder.setMainText(purpose_v.getName());
-                    holder.setSecondaryText(isPurposeEnable_v ? config.getConsentManagementActivatedText() : config.getConsentManagementDeactivatedText());
+                    holder.setSecondaryText(purpose_v.getDescription());
+                    holder.setActive(isPurposeEnable_v);
+                    holder.expand(expandedCells.get(position));
 
                     holder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            expandedCells.set(position, !expandedCells.get(position));
+                            holder.expand(expandedCells.get(position));
+                            notifyItemChanged(position);
+                            /*
                             Intent intent = new Intent(getApplicationContext(), PurposeActivity.class);
                             intent.putExtra("purpose", purpose_v);
                             intent.putExtra("purpose_status", isPurposeEnable_v);
                             startActivityForResult(intent, PURPOSE_ACTIVITY_REQUEST_CODE);
+                            */
+                        }
+                    });
+
+                    holder.setSwitchListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            consentString = b ?
+                                    ConsentString.consentStringByAddingPurposeConsent(purpose_v.getId(), consentString) :
+                                    ConsentString.consentStringByRemovingPurposeConsent(purpose_v.getId(), consentString);
                         }
                     });
                     break;

@@ -39,6 +39,7 @@ android {
         versionName cmpVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         archivesBaseName = "fidzupcmp"
+        android.defaultConfig.vectorDrawables.useSupportLibrary = true
     }
 
     testOptions {
