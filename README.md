@@ -10,10 +10,10 @@ It first comply with the french regulator on privacy. ([CNIL](https://www.cnil.f
 Retrieving user consent is mandatory in EU starting May 25th due to the _General Data Protection Regulation (GDPR)_.
 
 <p align="center">
-  <img src="images/android_consent_popup.png" alt="Consent tool Popup on Android"/>
-  <img src="images/android_consent_manage_choice_1.png" alt="Consent tool Popup on Android"/>
-  <img src="images/android_consent_manage_choice_2.png" alt="Consent tool Popup on Android"/>
-  <img src="images/android_consent_manage_vendors.png" alt="Consent tool Vendors List on Android"/>
+  <img src="images/android_consent_popup.png" alt="Consent tool Popup on Android" width="40%" height="40%"/>
+  <img src="images/android_consent_manage_choice_1.png" alt="Consent tool Popup on Android" width="40%" height="40%"/>
+  <img src="images/android_consent_manage_choice_2.png" alt="Consent tool Popup on Android" width="40%" height="40%"/>
+  <img src="images/android_consent_manage_vendors.png" alt="Consent tool Vendors List on Android" width="40%" height="40%"/>
 </p>
 
 ## Usage
