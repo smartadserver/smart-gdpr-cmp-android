@@ -11,9 +11,9 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 
 <p align="center">
   <img src="images/android_consent_popup.png" alt="Consent tool Popup on Android"/>
-  <img src="images/android_consent_manage_choice-1.png" alt="Consent tool Popup on Android"/>
+  <img src="images/android_consent_manage_choice_1.png" alt="Consent tool Popup on Android"/>
   <img src="images/android_consent_manage_choice_2.png" alt="Consent tool Popup on Android"/>
-  <img src="images/android_consent_vendors.png" alt="Consent tool Vendors List on Android"/>
+  <img src="images/android_consent_manage_vendors.png" alt="Consent tool Vendors List on Android"/>
 </p>
 
 ## Usage
