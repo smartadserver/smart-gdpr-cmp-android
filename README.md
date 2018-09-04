@@ -4,8 +4,8 @@
 
 _FidzupCMP for Android_ is an Android SDK (a fork from the [SmartCMP](https://github.com/smartadserver/smart-gdpr-cmp-android)) allowing you to retrieve and store the user's consent for data usage in your Android apps.
 
-The purposes & vendors retrieval as well as the consent storage is eventually compliant with [IAB Transparency and Consent Framework specifications](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework).
-It first comply with the french regulator on privacy. ([CNIL](https://www.cnil.fr))
+The purposes & vendors retrieval as well as the consent storage is compliant with [IAB Transparency and Consent Framework specifications](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework).
+It also comply with the french regulator on privacy. ([CNIL](https://www.cnil.fr))
 
 Retrieving user consent is mandatory in EU starting May 25th due to the _General Data Protection Regulation (GDPR)_.
 
@@ -22,25 +22,7 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 
 #### Using Gradle (recommended)
 
-1. In the main `build.gradle` of your project, declare the Fidzup repository
-
-        allprojects {
-            repositories {
-                // add the Fidzup repository
-                maven { url 'https://packagecloud.io/fidzup/android/maven2' }
-
-                // …
-            }
-        }
-
-2. In the `build.gradle` file corresponding to your application module, you can now import the `FidzupCMP` by declaring it in the _dependencies_ section
-
-        dependencies {
-            // …
-
-            // add FidzupCMP
-            implementation 'com.fidzup.android:cmp:7@aar'
-        }
+We are working on publishing our artifact on a Maven repo... Until done, please use the git repository directly ;-)
 
 #### From the Git repository
 
@@ -49,7 +31,7 @@ Download this repository then add the `FidzupCMP` module to your project through
 ### Integration
 
 You must setup the CMP before using it. Start by creating a configuration object that will define how the first screen of the consent tool will look like:
-
+```Java
     ConsentToolConfiguration consentToolConfiguration = new ConsentToolConfiguration(getApplicationContext(),
                 R.drawable.logo_smart,
                 R.string.cmp_home_screen_text,
@@ -58,6 +40,7 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_home_screen_close_refuse_button_title,
                 R.string.cmp_consent_tool_preferences_appbar_subtitle,
                 R.string.cmp_consent_tool_preferences_save_button_title,
+                R.string.cmp_consent_tool_preferences_editor_section_header,
                 R.string.cmp_consent_tool_preferences_vendors_section_header,
                 R.string.cmp_consent_tool_preferences_purposes_section_header,
                 R.string.cmp_consent_tool_preferences_vendor_list_access_cell_text,
@@ -75,9 +58,24 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_alert_dialog_description,
                 R.string.cmp_alert_dialog_negative_button_title,
                 R.string.cmp_alert_dialog_positive_button_title);
+```
+
+If you wanna also manage your purposes in the CMP as an editor, you also need to set where to initialize the editor, by giving 2 URLs, or a fixed JSON String.
+Example giving 2 URLs:
+
+```Java
+    consentToolConfiguration.setEditorConfiguration("https://www.fidzup.com/editor/editor.json","https://www.fidzup.com/editor/editor-{language}.json");
+```
+
+Example giving on JSON String:
+
+````Java
+    consentToolConfiguration.setEditorConfiguration(myJsonString);
+```
 
 Call the `configure()` method on `ConsentManager.getSharedInstance()` to start the CMP. A good place to configure the _FidzupCMP_ is in the `Application` class of your app, in the `onCreate` method. Indeed, your `Application` instance is needed by the CMP: it will listen to your application entering background or foreground to avoid unnecessary network calls.
 
+````Java
     public class MyApplication extends Application {
         @Override
         public void onCreate() {
@@ -89,6 +87,7 @@ Call the `configure()` method on `ConsentManager.getSharedInstance()` to start t
             ConsentManager.getSharedInstance().configure(this, language, consentToolConfiguration);
         }
     }
+```
 
 When the CMP is started, it will automatically fetch the most recent vendors list _(vendors.json)_ and prompt the user for consent if necessary, saving the resulting consent string in Android _SharedPreferences_ (according to the IAB specifications).
 
