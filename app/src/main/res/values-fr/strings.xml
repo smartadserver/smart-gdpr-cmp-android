@@ -16,25 +16,25 @@ En cliquant sur J\'accepte, vous donnez votre accord pour la collecte et le trai
     <!-- ConsentToolPreferencesActivity -->
     <string name="cmp_consent_tool_preferences_appbar_subtitle">Privacy preferences</string>
     <string name="cmp_consent_tool_preferences_editor_section_header">éditeur</string>
-    <string name="cmp_consent_tool_preferences_purposes_section_header">Purposes</string>
-    <string name="cmp_consent_tool_preferences_vendors_section_header">Vendors</string>
+    <string name="cmp_consent_tool_preferences_purposes_section_header">Publicité</string>
+    <string name="cmp_consent_tool_preferences_vendors_section_header">Partenaires</string>
     <string name="cmp_consent_tool_preferences_allowed_purpose_text">yes</string>
     <string name="cmp_consent_tool_preferences_disallowed_purpose_text">no</string>
     <string name="cmp_consent_tool_preferences_vendor_list_access_cell_text">Authorized vendors</string>
     <string name="cmp_consent_tool_preferences_save_button_title">Save</string>
 
     <!-- PurposeActivity -->
-    <string name="cmp_purpose_detail_appbar_subtitle">Purpose</string>
+    <string name="cmp_purpose_detail_appbar_subtitle">Finalités</string>
     <string name="cmp_purpose_detail_allowed_text">Allowed</string>
 
     <!-- VendorListActivity -->
-    <string name="cmp_vendors_list_appbar_subtitle">Vendors list</string>
+    <string name="cmp_vendors_list_appbar_subtitle">Partenaires</string>
 
     <!-- VendorActivity -->
-    <string name="cmp_vendor_detail_appbar_subtitle">Vendor</string>
+    <string name="cmp_vendor_detail_appbar_subtitle">Partenaire</string>
     <string name="cmp_vendor_detail_privacy_policy_button_title">VIEW PRIVACY POLICY</string>
-    <string name="cmp_vendor_detail_purposes_section_header">Purposes</string>
-    <string name="cmp_vendor_detail_features_section_header">Features</string>
+    <string name="cmp_vendor_detail_purposes_section_header">Finalités</string>
+    <string name="cmp_vendor_detail_features_section_header">Fonctionnalités</string>
 
     <!-- PrivacyPolicyActivity -->
     <string name="cmp_privacy_policy_appbar_subtitle">Privacy policy</string>

@@ -38,13 +38,16 @@ public class EditorManager {
     @NonNull
     EditorURL editorURL;
 
+    // The JSON String of the editor, if not refreshed by timer with URL.
+    String editorJson;
+
     // The timer used to schedule the automatic refresh.
     private Timer timer;
 
     // The Date of the last vendor list refresh.
     private Date lastRefreshDate;
 
-    // flag to mark that a download attempt of the vendors list is currently in progress
+    // flag to mark that a download attempt of the editor is currently in progress
     private boolean downloadingEditor = false;
 
     /**
@@ -61,7 +64,7 @@ public class EditorManager {
     }
 
     /**
-     * Initialize a EditorManager that will download only the given version number of the vendor list.
+     * Initialize a EditorManager that will download only the given version number of the editor.
      *
      * @param listener          The editor manager listener to call when the vendor list is downloaded or failed to be downloaded.
      * @param refreshInterval   Time between each refresh.
@@ -74,7 +77,19 @@ public class EditorManager {
         this.listener = listener;
         this.refreshInterval = refreshInterval;
         this.retryInterval = retryInterval;
-        editorURL = editorVersion == -1 ? new EditorURL(language) : new EditorURL(editorVersion, language);
+        this.editorURL = new EditorURL(language);
+    }
+
+    @NonNull
+    public EditorManager setEditorURLs(String jsonURL, String localizedJsonURL) {
+        this.editorURL.setDefaultURLs(jsonURL,localizedJsonURL);
+        return this;
+    }
+
+    @NonNull
+    public EditorManager setEditorJSON(String json) {
+        this.editorJson = json;
+        return this;
     }
 
     /**
@@ -261,9 +276,22 @@ public class EditorManager {
     }
 
     /**
+     * Refresh the editor from local json string.
+     */
+    @SuppressWarnings("unchecked")
+    public void refreshEditorFromJson() {
+        try {
+            JSONObject JSON = new JSONObject(this.editorJson);
+            listener.onEditorUpdateSuccess(new Editor(JSON));
+        } catch (Exception e) {
+            listener.onEditorUpdateFail(e);
+        }
+    }
+
+    /**
      * Get the vendor list with the given vendor list version.
      *
-     * @param editorVersion The vendor list version that must be downloaded.
+     * @param editorVersion The editor version that must be downloaded.
      * @param listener          The listener that must be called.
      */
     @SuppressWarnings("unchecked")
@@ -284,7 +312,7 @@ public class EditorManager {
             }
         });
 
-        jsonAsyncTask.execute(new EditorURL(editorVersion, null).getURL());
+        jsonAsyncTask.execute(new EditorURL(null).getURL());
 
     }
 

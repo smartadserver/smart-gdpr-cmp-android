@@ -27,40 +27,29 @@ public class Constants {
         public static final String ParsedVendorConsent            = "IABConsent_ParsedVendorConsents";
     }
 
-    // Custome Editor Keys for SharedPreferences storage.
-    @SuppressWarnings("unused")
-    public class EditorConsentKeys {
-        public static final String CMPPresent                     = "EditorConsent_CMPPresent";
-        public static final String SubjectToGDPR                  = "EditorConsent_SubjectToGDPR";
-        public static final String ConsentString                  = "EditorConsent_ConsentString";
-        public static final String ParsedPurposeConsent           = "EditorConsent_ParsedPurposeConsents";
-    }
-
-    // The AdvertisingConsentStatus SharedPreferences key contains the current user consent for the advertising
-    // purpose of the current vendor list.
+    // The FidzupCMPConsentKeys SharedPreferences key contains the current user consent for the advertising
+    // purpose of the current editor & vendor list.
     //
-    // This status is only based on the answer of the user for the advertising purpose and does not take
+    // The AdvertisingConsentStatus status is only based on the answer of the user for the advertising purpose and does not take
     // vendors status into account. It should be used for third party advertisement SDK that are not
     // IAB TCF compliant.
     //
-    // Note: this key is not part of the IAB TCF specifications.
-    public class AdvertisingConsentStatus {
-        public static final int PurposeId                         = 3;
-        public static final String Key                            = "FidzupCMP_advertisingConsentStatus";
+    // Note: all these keys are not part of the IAB TCF specifications.
+    public class FidzupCMPConsentKeys {
+        public static final int    PurposeId                  = 3;
+        public static final String AdvertisingConsentStatus   = "FidzupCMP_advertisingConsentStatus";
+        public static final String ConsentString              = "GlobalConsent_ConsentString";
+        public static final String ParsedEditorPurposeConsent = "GlobalConsent_ParsedEditorPurposeConsents";
     }
-
     // Editor configuration.
     public class Editor {
-        public static final String EditorDefaultEndPoint = "http://jira.fidzup.com/editor/editor.json";
-        public static final String EditorVersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
+        public static final String EditorDefaultEndPoint          = "https://www.fidzup.com/editor/editor.json";
 
-        public static final String EditorDefaultLocalizedEndPoint       = "http://jira.fidzup.com/editor/editor-{language}.json";
-        public static final String EditorVersionedLocalizedEndPoint     = "https://vendorlist.consensu.org/purposes-{language}-{version}.json";
+        public static final String EditorDefaultLocalizedEndPoint = "https://www.fidzup.com/editor/editor-{language}.json";
     }
 
         // Vendor List configuration.
     public class VendorList {
-
         public static final String DefaultEndPoint                = "https://vendorlist.consensu.org/vendorlist.json";
         public static final String VersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
 

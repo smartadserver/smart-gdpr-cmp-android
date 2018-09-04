@@ -39,7 +39,7 @@ public class FidzupCMPDemoApplication extends MultiDexApplication implements Con
     }
 
     private ConsentToolConfiguration generatedConsentToolConfiguration() {
-        return new ConsentToolConfiguration(this,
+        ConsentToolConfiguration consentToolConfiguration = new ConsentToolConfiguration(this,
                 R.drawable.logo_fidzup,
                 R.string.cmp_home_screen_text,
                 R.string.cmp_home_screen_manage_consent_button_title,
@@ -65,6 +65,8 @@ public class FidzupCMPDemoApplication extends MultiDexApplication implements Con
                 R.string.cmp_alert_dialog_description,
                 R.string.cmp_alert_dialog_negative_button_title,
                 R.string.cmp_alert_dialog_positive_button_title);
+        consentToolConfiguration.setEditorConfiguration("https://www.fidzup.com/editor/editor.json","https://www.fidzup.com/editor/editor-{language}.json");
+        return consentToolConfiguration;
     }
 
     @Override

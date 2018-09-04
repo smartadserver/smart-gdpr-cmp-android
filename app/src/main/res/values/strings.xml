@@ -3,9 +3,9 @@
 
     <!-- ConsentToolActivity -->
     <string name="cmp_home_screen_text">[Place here your legal privacy notive for the consent tool, compliant with GDPR]</string>
-    <string name="cmp_home_screen_manage_consent_button_title">MANAGE MY CHOICES</string>
-    <string name="cmp_home_screen_close_button_title">GOT IT, THANKS!</string>
-    <string name="cmp_home_screen_close_refuse_button_title">GOT IT, BUT NO THANKS!</string>
+    <string name="cmp_home_screen_manage_consent_button_title">Manage my choices</string>
+    <string name="cmp_home_screen_close_button_title">Accept</string>
+    <string name="cmp_home_screen_close_refuse_button_title">Refuse</string>
 
     <!-- ConsentToolPreferencesActivity -->
     <string name="cmp_consent_tool_preferences_appbar_subtitle">Privacy preferences</string>

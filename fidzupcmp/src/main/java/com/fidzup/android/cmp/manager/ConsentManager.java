@@ -148,7 +148,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
                 if (vendorListManager != null) {
                     vendorListManager.startAutomaticRefresh(false);
                 }
-                if (editorManager != null) {
+                if (editorManager != null && consentToolConfiguration.isEditorConfiguredWithURL()) {
                     editorManager.startAutomaticRefresh(false);
                 }
             }
@@ -177,7 +177,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
                             vendorListManager.stopAutomaticRefresh();
                         }
                         // suspend editor refreshes
-                        if (editorManager != null) {
+                        if (editorManager != null && consentToolConfiguration.isEditorConfiguredWithURL()) {
                             editorManager.stopAutomaticRefresh();
                         }
                     }
@@ -284,7 +284,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
         this.uiDisplayInterval = uiDisplayInterval;
 
         // Check in preferences for already existing consent string.
-        String rawConsentString = readStringFromSharedPreferences(Constants.IABConsentKeys.ConsentString, null);
+        String rawConsentString = readStringFromSharedPreferences(Constants.FidzupCMPConsentKeys.ConsentString, null);
         if (rawConsentString != null) {
             try {
                 consentString = ConsentString.fromBase64String(rawConsentString);
@@ -295,9 +295,17 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
         vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
         vendorListManager.startAutomaticRefresh(true);
-        // Instantiate the EditorManager and immediately trigger the automatic refresh.
-        editorManager = new EditorManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
-        editorManager.startAutomaticRefresh(true);
+        if (this.consentToolConfiguration.isEditorConfigured()) {
+            editorManager = new EditorManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
+            if (this.consentToolConfiguration.isEditorConfiguredWithURL()) {
+                // Instantiate the EditorManager and immediately trigger the automatic refresh.
+                editorManager.setEditorURLs(this.consentToolConfiguration.getConsentManagementDefaultEditorJsonURL(), this.consentToolConfiguration.getConsentManagementLocalizedEditorJsonURL());
+                editorManager.startAutomaticRefresh(true);
+            } else {
+                editorManager.setEditorJSON(this.consentToolConfiguration.getConsentManagementEditorJson());
+                editorManager.refreshEditorFromJson();
+            }
+        }
     }
 
     /**
@@ -409,15 +417,18 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
         }
 
         // Store the consent string in the SharedPreferences.
-        saveStringInSharedPreferences(Constants.IABConsentKeys.ConsentString, consentString.getConsentString());
+        saveStringInSharedPreferences(Constants.IABConsentKeys.ConsentString, consentString.getIABConsentString());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedPurposeConsent, consentString.parsedPurposeConsents());
         saveStringInSharedPreferences(Constants.IABConsentKeys.ParsedVendorConsent, consentString.parsedVendorConsents());
 
         // Store the consent string in the SharedPreferences.
-        saveStringInSharedPreferences(Constants.EditorConsentKeys.ParsedPurposeConsent, consentString.parsedEditorPurposeConsents());
+        saveStringInSharedPreferences(Constants.FidzupCMPConsentKeys.ConsentString, consentString.getConsentString());
+
+        // Store the editor purposes consent string in the SharedPreferences.
+        saveStringInSharedPreferences(Constants.FidzupCMPConsentKeys.ParsedEditorPurposeConsent, consentString.parsedEditorPurposeConsents());
 
         // Save the advertising consent status in the SharedPreferences.
-        saveStringInSharedPreferences(Constants.AdvertisingConsentStatus.Key, consentString.isPurposeAllowed(Constants.AdvertisingConsentStatus.PurposeId) ? "1" : "0");
+        saveStringInSharedPreferences(Constants.FidzupCMPConsentKeys.AdvertisingConsentStatus, consentString.isPurposeAllowed(Constants.FidzupCMPConsentKeys.PurposeId) ? "1" : "0");
     }
 
     /**
@@ -538,7 +549,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
             return false;
         }
 
-        if (lastEditor == null) {
+        if (lastEditor == null && consentToolConfiguration.isEditorConfigured()) {
             logErrorMessage("ConsentManager cannot show consent tool as no editor is available. Please wait.");
             return false;
         }

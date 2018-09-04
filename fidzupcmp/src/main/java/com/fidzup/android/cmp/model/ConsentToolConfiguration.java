@@ -167,6 +167,16 @@ public class ConsentToolConfiguration {
     // Eg: "I accept"
     private int consentManagementAlertDialogPositiveButtonTitleStringRes;
 
+    private String consentManagementDefaultEditorJsonURL;
+
+    private String consentManagementLocalizedEditorJsonURL;
+
+    private boolean isEditorConfigured = false;
+
+    private boolean isEditorConfiguredWithURL;
+
+    private String consentManagementEditorJson;
+
     /**
      * Initialize a new instance of ConsentToolConfiguration.
      *
@@ -252,6 +262,23 @@ public class ConsentToolConfiguration {
         this.consentManagementAlertDialogPositiveButtonTitleStringRes = consentManagementAlertDialogPositiveButtonTitleStringRes;
     }
 
+    public ConsentToolConfiguration setEditorConfiguration(String consentManagementDefaultEditorJsonURL,
+                                                           String consentManagementLocalizedEditorJsonURL) {
+        this.isEditorConfigured = true;
+        this.isEditorConfiguredWithURL = true;
+        this.consentManagementDefaultEditorJsonURL   = consentManagementDefaultEditorJsonURL;
+        this.consentManagementLocalizedEditorJsonURL = consentManagementLocalizedEditorJsonURL;
+
+        return this;
+    }
+
+    public ConsentToolConfiguration setEditorConfiguration(String consentManagementEditorJson) {
+        this.isEditorConfigured = true;
+        this.isEditorConfiguredWithURL = false;
+        this.consentManagementEditorJson = consentManagementEditorJson;
+
+        return this;
+    }
     /**
      * @return DrawableRes of the drawable to display on the home screen.
      */
@@ -428,4 +455,34 @@ public class ConsentToolConfiguration {
         return context.getString(consentManagementAlertDialogPositiveButtonTitleStringRes);
     }
 
+    /**
+     * @return The base json editor url, where to fetch the editor json configuration
+     */
+    public String getConsentManagementDefaultEditorJsonURL() {
+        return this.consentManagementDefaultEditorJsonURL;
+    }
+
+    /**
+     * @return true if editor si configured, false otherwise
+     */
+    public boolean isEditorConfigured() { return this.isEditorConfigured; }
+
+    /**
+     * @return true if editor URL are configured, false otherwise
+     */
+    public boolean isEditorConfiguredWithURL() { return this.isEditorConfiguredWithURL; }
+
+    /**
+     * @return The localized json editor url, where to fetch the localized editor json configuration
+     */
+    public String getConsentManagementLocalizedEditorJsonURL() {
+        return this.consentManagementLocalizedEditorJsonURL;
+    }
+
+    /**
+     * @return The json editor string
+     */
+    public String getConsentManagementEditorJson() {
+        return this.consentManagementEditorJson;
+    }
 }

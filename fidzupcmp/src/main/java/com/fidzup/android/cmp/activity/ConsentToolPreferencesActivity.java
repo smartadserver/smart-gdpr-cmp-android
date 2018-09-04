@@ -43,8 +43,9 @@ import java.util.Collections;
 
 public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
-    private static final int PURPOSE_ACTIVITY_REQUEST_CODE = 0;
-    private static final int VENDORS_LIST_ACTIVITY_REQUEST_CODE = 1;
+    private static final int EDITOR_PURPOSE_ACTIVITY_REQUEST_CODE = 0;
+    private static final int PURPOSE_ACTIVITY_REQUEST_CODE = 1;
+    private static final int VENDORS_LIST_ACTIVITY_REQUEST_CODE = 2;
 
     private ConsentString consentString;
     private VendorList vendorList;
@@ -81,8 +82,13 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
     private void bindViews() {
         // Setup the recycler view.
         RecyclerView recyclerView = findViewById(R.id.preferences_recycler_view);
+        ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
 
-        int cellCount = vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
+        int cellCount = vendorList.getPurposes().size() + 3;
+        if (config.isEditorConfigured() && editor!= null) {
+            cellCount =  vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
+        }
+
         expandedCells = new ArrayList<>(cellCount);
 
         while(cellCount-- > 0) expandedCells.add(false);
@@ -133,6 +139,14 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         }
 
         switch (requestCode) {
+            case EDITOR_PURPOSE_ACTIVITY_REQUEST_CODE:
+                Purpose editorPurpose = data.getParcelableExtra("editor_purpose");
+                boolean editorPurposeStatus = data.getBooleanExtra("editor_purpose_status", false);
+
+                // Update the ConsentString with the new purpose status.
+                consentString = editorPurposeStatus ? ConsentString.consentStringByAddingEditorPurposeConsent(editorPurpose.getId(), consentString) : ConsentString.consentStringByRemovingEditorPurposeConsent(editorPurpose.getId(), consentString);
+                break;
+
             case PURPOSE_ACTIVITY_REQUEST_CODE:
                 Purpose purpose = data.getParcelableExtra("purpose");
                 boolean purposeStatus = data.getBooleanExtra("purpose_status", false);
@@ -232,22 +246,29 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == 0) {
-                return VIEW_TYPE_EDITOR_TITLE;
+            ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
+            // 3 Title cells for Editor Purposes and Vendors, all purposes cells and the vendors summary cell.
+            int editorOffset = 0;
+            if (config.isEditorConfigured()) {
+                editorOffset = editor.getPurposes().size() + 1;
+                if (position == 0) {
+                    return VIEW_TYPE_EDITOR_TITLE;
 
-            } else if (position <= editor.getPurposes().size()) {
-                return VIEW_TYPE_EDITOR_CELL;
+                } else if (position < editorOffset) {
+                    return VIEW_TYPE_EDITOR_CELL;
 
-            } else if (position == editor.getPurposes().size() + 1) {
-                return VIEW_TYPE_PURPOSE_TITLE;
-
-            } else if (position <= editor.getPurposes().size() + 1 + vendorList.getPurposes().size()) {
-                return VIEW_TYPE_PURPOSE_CELL;
-
-            } else if (position == editor.getPurposes().size() + 1 + vendorList.getPurposes().size() + 1) {
-                return VIEW_TYPE_VENDOR_TITLE;
+                }
             }
 
+            if (position == editorOffset) {
+                return VIEW_TYPE_PURPOSE_TITLE;
+
+            } else if (position <= editorOffset + vendorList.getPurposes().size()) {
+                return VIEW_TYPE_PURPOSE_CELL;
+
+            } else if (position == editorOffset + vendorList.getPurposes().size() + 1) {
+                return VIEW_TYPE_VENDOR_TITLE;
+            }
             return VIEW_TYPE_VENDOR_CELL;
         }
 
@@ -276,6 +297,10 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
             int ViewType = getItemViewType(position);
             final PreferencesViewHolder holder = (PreferencesViewHolder) viewHolder;
             ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
+            int editorOffset = 0;
+            if (config.isEditorConfigured()) {
+                editorOffset = editor.getPurposes().size() + 1;
+            }
 
             switch (ViewType) {
                 case VIEW_TYPE_EDITOR_TITLE:
@@ -288,7 +313,7 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
                 case VIEW_TYPE_EDITOR_CELL:
                     final Purpose purpose = editor.getPurposes().get(position - 1);
-                    final boolean isPurposeEnable = consentString.isPurposeAllowed(purpose.getId());
+                    final boolean isPurposeEnable = consentString.isEditorPurposeAllowed(purpose.getId());
 
                     holder.setMainText(purpose.getName());
                     holder.setSecondaryText(purpose.getDescription());
@@ -303,9 +328,9 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                             notifyItemChanged(position);
                             /*
                             Intent intent = new Intent(getApplicationContext(), PurposeActivity.class);
-                            intent.putExtra("purpose", purpose);
-                            intent.putExtra("purpose_status", isPurposeEnable);
-                            startActivityForResult(intent, PURPOSE_ACTIVITY_REQUEST_CODE);
+                            intent.putExtra("editor_purpose", purpose);
+                            intent.putExtra("editor_purpose_status", isPurposeEnable);
+                            startActivityForResult(intent, EDITOR_PURPOSE_ACTIVITY_REQUEST_CODE);
                             */
                         }
                     });
@@ -314,15 +339,15 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             consentString = b ?
-                                    ConsentString.consentStringByAddingPurposeConsent(purpose.getId(), consentString) :
-                                    ConsentString.consentStringByRemovingPurposeConsent(purpose.getId(), consentString);
+                                    ConsentString.consentStringByAddingEditorPurposeConsent(purpose.getId(), consentString) :
+                                    ConsentString.consentStringByRemovingEditorPurposeConsent(purpose.getId(), consentString);
                         }
                     });
 
                     break;
 
                 case VIEW_TYPE_PURPOSE_CELL:
-                    final Purpose purpose_v = vendorList.getPurposes().get(position - (editor.getPurposes().size()+2));
+                    final Purpose purpose_v = vendorList.getPurposes().get(position - (editorOffset+1));
                     final boolean isPurposeEnable_v = consentString.isPurposeAllowed(purpose_v.getId());
 
                     holder.setMainText(purpose_v.getName());
@@ -381,8 +406,13 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
+            ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
             // 3 Title cells for Editor Purposes and Vendors, all purposes cells and the vendors summary cell.
-            return vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
+            if (config.isEditorConfigured()) {
+                return vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
+            } else {
+                return vendorList.getPurposes().size() + 3;
+            }
         }
     }
 }

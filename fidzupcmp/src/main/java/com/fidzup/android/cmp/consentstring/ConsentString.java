@@ -143,6 +143,9 @@ public class ConsentString implements Parcelable {
     // The Base64 representation of the consent string.
     private String consentString;
 
+    // The Base64 representation of the IAB consent string.
+    private String iabConsentString;
+
     /**
      * Initialize a new instance of ConsentString using a vendor list version, an editor version and a max vendor id.
      *
@@ -417,6 +420,19 @@ public class ConsentString implements Parcelable {
                 allowedVendors,
                 vendorListEncoding));
         this.consentString = tmp.stringValue;
+        tmp = new BitsString(true, iabEncodeToBits(versionConfig,
+                created,
+                lastUpdated,
+                cmpId,
+                cmpVersion,
+                consentScreen,
+                consentLanguage,
+                vendorListVersion,
+                maxVendorId,
+                allowedPurposes,
+                allowedVendors,
+                vendorListEncoding));
+        this.iabConsentString = tmp.stringValue;
     }
 
     /**
@@ -427,6 +443,16 @@ public class ConsentString implements Parcelable {
      */
     public boolean isPurposeAllowed(int purposeId) {
         return allowedPurposes.contains(purposeId);
+    }
+
+    /**
+     * Check if an editor purpose is allowed by the consent string.
+     *
+     * @param purposeId The purpose id which should be checked.
+     * @return true if the editor purpose is allowed, false otherwise.
+     */
+    public boolean isEditorPurposeAllowed(int purposeId) {
+        return editorPurposes.contains(purposeId);
     }
 
     /**
@@ -509,6 +535,7 @@ public class ConsentString implements Parcelable {
         if (cmpId != that.cmpId) return false;
         if (cmpVersion != that.cmpVersion) return false;
         if (consentScreen != that.consentScreen) return false;
+        if (editorVersion != that.editorVersion) return false;
         if (vendorListVersion != that.vendorListVersion) return false;
         if (maxVendorId != that.maxVendorId) return false;
         if (!created.equals(that.created)) return false;
@@ -521,7 +548,7 @@ public class ConsentString implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(new Object[]{version, created, lastUpdated, cmpId, cmpVersion, consentScreen, consentLanguage,
+        return Arrays.hashCode(new Object[]{version, created, lastUpdated, cmpId, cmpVersion, consentScreen, consentLanguage, editorVersion,
                 vendorListVersion, maxVendorId, editorPurposes, allowedPurposes, allowedVendors});
     }
 
@@ -576,6 +603,76 @@ public class ConsentString implements Parcelable {
         bitsArray.add(BitUtils.longToBits(editorVersion, versionConfig.getEditorVersionBitSize()));
         bitsArray.add(BitUtils.longToBits(vendorListVersion, versionConfig.getVendorListVersionBitSize()));
         bitsArray.add(purposesEditorBitField(versionConfig, editorPurposes));
+        bitsArray.add(purposesBitField(versionConfig, allowedPurposes));
+
+        String bits = "";
+        for (String str : bitsArray) {
+            if (str == null) {
+                throw new IllegalArgumentException("One of the arguments is illegal. Not possible to convert it to bits string.");
+            }
+
+            bits = bits.concat(str);
+        }
+
+        switch (vendorListEncoding) {
+            case BITFIELD:
+                bits = bits.concat(vendorListBitfield(versionConfig, maxVendorId, allowedVendors));
+                break;
+
+            case RANGE:
+                bits = bits.concat(vendorListRange(versionConfig, maxVendorId, allowedVendors, false));
+                break;
+
+            case AUTOMATIC:
+                String bitfield = vendorListBitfield(versionConfig, maxVendorId, allowedVendors);
+                String range = vendorListRange(versionConfig, maxVendorId, allowedVendors, false);
+                bits = bits.concat(bitfield.length() < range.length() ? bitfield : range); // automatic select the most efficient encoding.
+                break;
+        }
+
+        return bits;
+    }
+
+    /**
+     * Return a base64 consent string corresponding to the iabConsentString.
+     *
+     * @param versionConfig      The consent string version configuration.
+     * @param created            The date of the first consent string creation.
+     * @param lastUpdated        The date of the last consent string update.
+     * @param cmpId              The id of the last Consent Manager Provider that updated the consent string.
+     * @param cmpVersion         The version of the Consent Manager Provider.
+     * @param consentScreen      The screen number in the CMP where the consent was given.
+     * @param consentLanguage    The language that the CMP asked for consent in (in two-letters ISO 639-1 format).
+     * @param vendorListVersion  The version of the vendor list used in the most recent consent string update.
+     * @param maxVendorId        The maximum vendor id id that can be found in the current vendor list.
+     * @param allowedPurposes    An array of allowed purposes id.
+     * @param allowedVendors     An array of allowed vendors id.
+     * @param vendorListEncoding The type of vendors encoding that should be used to generate the base64 consent string.
+     * @return A base64 consent string corresponding to the ConsentString instance.
+     * @throws IllegalArgumentException When one of the arguments can't be encoded to bits string.
+     */
+    static private String iabEncodeToBits(@NonNull VersionConfig versionConfig,
+                                       @NonNull Date created,
+                                       @NonNull Date lastUpdated,
+                                       int cmpId,
+                                       int cmpVersion,
+                                       int consentScreen,
+                                       @NonNull Language consentLanguage,
+                                       int vendorListVersion,
+                                       int maxVendorId,
+                                       @NonNull ArrayList<Integer> allowedPurposes,
+                                       @NonNull ArrayList<Integer> allowedVendors,
+                                       ConsentEncoding vendorListEncoding) throws IllegalArgumentException {
+
+        ArrayList<String> bitsArray = new ArrayList<>();
+        bitsArray.add(BitUtils.longToBits(versionConfig.getVersion(), VersionConfig.getVersionBitSize()));
+        bitsArray.add(BitUtils.dateToBits(created, versionConfig.getCreatedBitSize()));
+        bitsArray.add(BitUtils.dateToBits(lastUpdated, versionConfig.getLastUpdatedBitSize()));
+        bitsArray.add(BitUtils.longToBits(cmpId, versionConfig.getCmpIdBitSize()));
+        bitsArray.add(BitUtils.longToBits(cmpVersion, versionConfig.getCmpVersionBitSize()));
+        bitsArray.add(BitUtils.longToBits(consentScreen, versionConfig.getConsentScreenBitSize()));
+        bitsArray.add(BitUtils.languageToBits(consentLanguage, versionConfig.getConsentLanguageBitSize()));
+        bitsArray.add(BitUtils.longToBits(vendorListVersion, versionConfig.getVendorListVersionBitSize()));
         bitsArray.add(purposesBitField(versionConfig, allowedPurposes));
 
         String bits = "";
@@ -674,7 +771,7 @@ public class ConsentString implements Parcelable {
      * @return ConsentString's editor version.
      */
     public int getEditorVersion() {
-        return vendorListVersion;
+        return editorVersion;
     }
 
     /**
@@ -720,6 +817,13 @@ public class ConsentString implements Parcelable {
      */
     public String getConsentString() {
         return consentString;
+    }
+
+    /**
+     * @return The base64URL encoded iab consent string.
+     */
+    public String getIABConsentString() {
+        return iabConsentString;
     }
 
     /**
@@ -1115,7 +1219,7 @@ public class ConsentString implements Parcelable {
      * @param vendorList      The vendor list corresponding to hte consent string.
      * @return A new consent string with no consent given.
      */
-    static public ConsentString consentStringWithNoConsent(int consentScreen, @NonNull Language consentLanguage, @NonNull Editor editor, @NonNull VendorList vendorList) {
+    static public ConsentString consentStringWithNoConsent(int consentScreen, @NonNull Language consentLanguage, Editor editor, @NonNull VendorList vendorList) {
         return consentStringWithNoConsent(consentScreen, consentLanguage, editor, vendorList, new Date());
     }
 
@@ -1129,7 +1233,11 @@ public class ConsentString implements Parcelable {
      * @param date            The date that will be used as create date & last updated date.
      * @return A new consent string with no consent given.
      */
-    static public ConsentString consentStringWithNoConsent(int consentScreen, @NonNull Language consentLanguage, @NonNull Editor editor, @NonNull VendorList vendorList, @NonNull Date date) {
+    static public ConsentString consentStringWithNoConsent(int consentScreen, @NonNull Language consentLanguage, Editor editor, @NonNull VendorList vendorList, @NonNull Date date) {
+        int editorVersion = 0;
+        if (editor != null) {
+            editorVersion = editor.getVersion();
+        }
         //noinspection ConstantConditions
         return new ConsentString(VersionConfig.getLatest(),
                 date,
@@ -1138,7 +1246,7 @@ public class ConsentString implements Parcelable {
                 Constants.CMPInfos.VERSION,
                 consentScreen,
                 consentLanguage,
-                editor.getVersion(),
+                editorVersion,
                 vendorList.getVersion(),
                 vendorList.getMaxVendorId(),
                 new ArrayList<Integer>(),
@@ -1155,7 +1263,7 @@ public class ConsentString implements Parcelable {
      * @param vendorList      The vendor list corresponding to the consent string.
      * @return A new consent string with every consent given for any purposes & vendors.
      */
-    static public ConsentString consentStringWithFullConsent(int consentScreen, @NonNull Language consentLanguage, @NonNull Editor editor, @NonNull VendorList vendorList) {
+    static public ConsentString consentStringWithFullConsent(int consentScreen, @NonNull Language consentLanguage, Editor editor, @NonNull VendorList vendorList) {
         return consentStringWithFullConsent(consentScreen, consentLanguage, editor, vendorList, new Date());
     }
 
@@ -1169,10 +1277,14 @@ public class ConsentString implements Parcelable {
      * @param date            The date that will be used as create date & last updated date.
      * @return A new consent string with every consent given for any purposes & vendors.
      */
-    static public ConsentString consentStringWithFullConsent(int consentScreen, @NonNull Language consentLanguage, @NonNull Editor editor, @NonNull VendorList vendorList, @NonNull Date date) {
+    static public ConsentString consentStringWithFullConsent(int consentScreen, @NonNull Language consentLanguage, Editor editor, @NonNull VendorList vendorList, @NonNull Date date) {
         ArrayList<Integer> editorPurposes = new ArrayList<>();
-        for (Purpose purpose : editor.getPurposes()) {
-            editorPurposes.add(purpose.getId());
+        int editorVersion = 0;
+        if (editor != null) {
+            editorVersion = editor.getVersion();
+            for (Purpose purpose : editor.getPurposes()) {
+                editorPurposes.add(purpose.getId());
+            }
         }
 
         ArrayList<Integer> allowedPurposes = new ArrayList<>();
@@ -1193,7 +1305,7 @@ public class ConsentString implements Parcelable {
                 Constants.CMPInfos.VERSION,
                 consentScreen,
                 consentLanguage,
-                editor.getVersion(),
+                editorVersion,
                 vendorList.getVersion(),
                 vendorList.getMaxVendorId(),
                 editorPurposes,
@@ -1260,7 +1372,7 @@ public class ConsentString implements Parcelable {
      * @param previousConsentString The previous consent string.
      * @return The new consent string.
      */
-    static public ConsentString consentStringFromUpdatedVendorList(@NonNull VendorList updatedVendorList, @NonNull VendorList previousVendorList, @NonNull Editor editor, @NonNull ConsentString previousConsentString) {
+    static public ConsentString consentStringFromUpdatedVendorList(@NonNull VendorList updatedVendorList, @NonNull VendorList previousVendorList, Editor editor, @NonNull ConsentString previousConsentString) {
         return consentStringFromUpdatedVendorList(updatedVendorList, previousVendorList, editor, previousConsentString, new Date());
     }
 
@@ -1273,7 +1385,7 @@ public class ConsentString implements Parcelable {
      * @param lastUpdated           The date that will be used as last updated date.
      * @return The new consent string.
      */
-    static public ConsentString consentStringFromUpdatedVendorList(@NonNull VendorList updatedVendorList, @NonNull VendorList previousVendorList, @NonNull Editor editor, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
+    static public ConsentString consentStringFromUpdatedVendorList(@NonNull VendorList updatedVendorList, @NonNull VendorList previousVendorList, Editor editor, @NonNull ConsentString previousConsentString, @NonNull Date lastUpdated) {
         // Retrieve all already allowed purposes.
         ArrayList<Integer> allowedPurposes = new ArrayList<>(previousConsentString.getAllowedPurposes());
         for (int idx = 0; idx < updatedVendorList.getPurposes().size(); idx++) {
@@ -1357,6 +1469,19 @@ public class ConsentString implements Parcelable {
     }
 
     /**
+     * Return a new consent string identical to the one provided, with a consent given for a particular editor purpose.
+     * <p>
+     * Note: this method will update the version config and the last updated date.
+     *
+     * @param purposeId     The purpose id which should be added to the consent list.
+     * @param consentString The consent string which should be copied.
+     * @return A new consent string with a consent given for a particular purpose.
+     */
+    static public ConsentString consentStringByAddingEditorPurposeConsent(@NonNull Integer purposeId, @NonNull ConsentString consentString) {
+        return consentStringByAddingEditorPurposeConsent(purposeId, consentString, new Date());
+    }
+
+    /**
      * Return a new consent string identical to the one provided, with a consent given for a particular purpose.
      * <p>
      * Note: this method will update the version config and the last updated date.
@@ -1417,7 +1542,7 @@ public class ConsentString implements Parcelable {
             return null;
         }
 
-        if (editor.getVersion() != previousConsentString.getEditorVersion()) {
+        if (editor != null && editor.getVersion() != previousConsentString.getEditorVersion()) {
             return null;
         }
 
@@ -1426,9 +1551,10 @@ public class ConsentString implements Parcelable {
         for (Purpose purpose : vendorList.getPurposes()) {
             consentString = ConsentString.consentStringByAddingPurposeConsent(purpose.getId(), consentString, lastUpdated);
         }
-
-        for (Purpose purpose : editor.getPurposes()) {
-            consentString = ConsentString.consentStringByAddingEditorPurposeConsent(purpose.getId(), consentString, lastUpdated);
+        if (editor != null) {
+            for (Purpose purpose : editor.getPurposes()) {
+                consentString = ConsentString.consentStringByAddingEditorPurposeConsent(purpose.getId(), consentString, lastUpdated);
+            }
         }
 
         return consentString;
