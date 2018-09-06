@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -178,7 +177,7 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
         private TextView mainTextView;
         private TextView secondaryTextView;
-        private SwitchCompat purposeSwitch;
+        private Switch purposeSwitch;
         boolean expanded = false;
 
         PreferencesViewHolder(View itemView, boolean isPurposeCell, boolean isTitle) {

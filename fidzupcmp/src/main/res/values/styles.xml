@@ -9,8 +9,4 @@
         <item name="android:layout_marginRight">8dp</item>
     </style>
 
-    <style name="ToggleSwitchTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="colorAccent">#46bdbf</item>
-    </style>
-
 </resources>
