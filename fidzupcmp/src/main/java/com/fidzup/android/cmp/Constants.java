@@ -9,11 +9,11 @@ public class Constants {
     // Generic information on the CMP sdk.
     public class CMPInfos {
 
-        // '1024' IS THE OFFICIAL CMP ID FOR FidzupCMP.
+        // '190' IS THE OFFICIAL CMP ID FOR FidzupCMP.
         // You can use this ID as long as you don't change the source code of this project.
         // If you don't use it exactly as distributed in the official Fidzup repository,
         // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
-        public static final int ID = 1024;
+        public static final int ID = 190;
         public static final int VERSION = 7;
     }
 
@@ -38,8 +38,8 @@ public class Constants {
     public class FidzupCMPConsentKeys {
         public static final int    PurposeId                  = 3;
         public static final String AdvertisingConsentStatus   = "FidzupCMP_advertisingConsentStatus";
-        public static final String ConsentString              = "GlobalConsent_ConsentString";
-        public static final String ParsedEditorPurposeConsent = "GlobalConsent_ParsedEditorPurposeConsents";
+        public static final String ConsentString              = "FidzupCMP_ConsentString";
+        public static final String ParsedEditorPurposeConsent = "FidzupCMP_ParsedEditorPurposeConsents";
     }
     // Editor configuration.
     public class Editor {

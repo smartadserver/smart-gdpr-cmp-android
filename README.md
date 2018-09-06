@@ -135,6 +135,6 @@ Check the [LICENSE file](LICENSE) for more details.
 
 ### Reusing FidzupCMP ID
 
-The CMP ID _'1024'_ used for consent string encoding is the CMP ID of _Fidzup_.
+The CMP ID _'190'_ used for consent string encoding is the CMP ID of _Fidzup_.
 
 You can use this CMP ID as long as you don't alter the source code of _FidzupCMP_. If you do modify the source code, **YOU MUST REGISTER YOUR FORK AS A NEW CMP and change the CMP ID** in `Constants.CMPInfos.ID`. You can register your forked CMP and obtain your own ID here: https://register.consensu.org/CMP
