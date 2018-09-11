@@ -294,6 +294,9 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
 
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
         vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
+        if (this.consentToolConfiguration.isPubVendorConfigured()) {
+            vendorListManager.setSubVendorListURL(this.consentToolConfiguration.getConsentManagementDefaultPubVendorJsonURL());
+        }
         vendorListManager.startAutomaticRefresh(true);
         if (this.consentToolConfiguration.isEditorConfigured()) {
             editorManager = new EditorManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);

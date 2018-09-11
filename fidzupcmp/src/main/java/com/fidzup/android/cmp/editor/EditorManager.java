@@ -41,6 +41,9 @@ public class EditorManager {
     // The JSON String of the editor, if not refreshed by timer with URL.
     String editorJson;
 
+    //
+    Language wantedLanguage = null;
+
     // The timer used to schedule the automatic refresh.
     private Timer timer;
 
@@ -77,12 +80,13 @@ public class EditorManager {
         this.listener = listener;
         this.refreshInterval = refreshInterval;
         this.retryInterval = retryInterval;
-        this.editorURL = new EditorURL(language);
+        this.wantedLanguage = language;
+//        this.editorURL = new EditorURL(language);
     }
 
     @NonNull
     public EditorManager setEditorURLs(String jsonURL, String localizedJsonURL) {
-        this.editorURL.setDefaultURLs(jsonURL,localizedJsonURL);
+        this.editorURL = new EditorURL(jsonURL,localizedJsonURL,this.wantedLanguage);
         return this;
     }
 

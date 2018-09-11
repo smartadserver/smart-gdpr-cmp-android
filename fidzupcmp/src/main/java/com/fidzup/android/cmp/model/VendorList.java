@@ -113,6 +113,16 @@ public class VendorList implements Parcelable {
      * @param localizedJSON The data representation of the localized vendor list JSON.
      */
     public VendorList(@NonNull JSONObject JSON, @Nullable JSONObject localizedJSON) throws JSONException {
+        this(JSON, localizedJSON,null);
+    }
+
+    /**
+     * Initialize a localized list of vendors from a vendor list JSON, a localized vendor list JSON and a sub vendor list JSON.
+     *
+     * @param JSON          The data representation of the vendor list JSON.
+     * @param localizedJSON The data representation of the localized vendor list JSON.
+     */
+    public VendorList(@NonNull JSONObject JSON, @Nullable JSONObject localizedJSON, @Nullable JSONObject subJSON) throws JSONException {
         version = JSON.getInt(JSONKey.VENDOR_LIST_VERSION);
 
         Date lastUpdated = DateUtils.dateFromString(JSON.getString(JSONKey.LAST_UPDATED));
@@ -138,9 +148,36 @@ public class VendorList implements Parcelable {
             }
         }
 
-        purposes = parsePurposes(JSON.getJSONArray(JSONKey.Purposes.PURPOSES), rawLocalizedPurposesArray);
-        features = parseFeatures(JSON.getJSONArray(JSONKey.Features.FEATURES), rawLocalizedFeaturesArray);
-        vendors = parseVendors(JSON.getJSONArray(JSONKey.Vendors.VENDORS));
+        JSONArray subVendorsArray = null;
+        JSONArray subPurposesArray = null;
+        JSONArray subFeaturesArray = null;
+
+        if (subJSON != null) {
+            //Mandatory to support pubvendors.json specification version 1.0
+            try {
+                subVendorsArray = subJSON.getJSONArray(JSONKey.Vendors.VENDORS);
+            } catch (JSONException e) {
+                // do nothing
+            }
+
+            //Experimental to support future pubvendors.json specification version 1.1
+            try {
+                subPurposesArray = subJSON.getJSONArray(JSONKey.Purposes.PURPOSES);
+            } catch (JSONException e) {
+                // do nothing
+            }
+
+            try {
+                subFeaturesArray = subJSON.getJSONArray(JSONKey.Features.FEATURES);
+            } catch (JSONException e) {
+                // do nothing
+            }
+
+        }
+
+        purposes = parsePurposes(JSON.getJSONArray(JSONKey.Purposes.PURPOSES), rawLocalizedPurposesArray, subPurposesArray);
+        features = parseFeatures(JSON.getJSONArray(JSONKey.Features.FEATURES), rawLocalizedFeaturesArray, subFeaturesArray);
+        vendors = parseVendors(JSON.getJSONArray(JSONKey.Vendors.VENDORS),subVendorsArray);
     }
 
     /**
@@ -263,7 +300,7 @@ public class VendorList implements Parcelable {
      * @return An ArrayList of purposes, or throw an exception if the JSON is invalid.
      * @throws JSONException if JSON is invalid.
      */
-    static private ArrayList<Purpose> parsePurposes(@NonNull JSONArray rawPurposesArray, @Nullable JSONArray rawLocalizedPurposesArray) throws JSONException {
+    static private ArrayList<Purpose> parsePurposes(@NonNull JSONArray rawPurposesArray, @Nullable JSONArray rawLocalizedPurposesArray, @Nullable JSONArray subPurposesArray) throws JSONException {
         ArrayList<Purpose> purposes = new ArrayList<>();
 
         for (int i = 0; i < rawPurposesArray.length(); i++) {
@@ -299,7 +336,23 @@ public class VendorList implements Parcelable {
                 }
             }
 
-            purposes.add(new Purpose(id, name, description));
+            if ( subPurposesArray != null) {
+                try {
+                    for (int idx = 0; idx < subPurposesArray.length(); idx++) {
+                        JSONObject subPurpose = (JSONObject) subPurposesArray.get(idx);
+
+                        if (subPurpose.getInt(JSONKey.Purposes.ID) == id) {
+                            purposes.add(new Purpose(id, name, description));
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // if unable to parse purpose JSON, accept purpose by default
+                    purposes.add(new Purpose(id, name, description));
+                }
+            } else {
+                purposes.add(new Purpose(id, name, description));
+            }
         }
 
         return purposes;
@@ -312,7 +365,7 @@ public class VendorList implements Parcelable {
      * @return An ArrayList of features, or throw an exception if the JSON is invalid.
      * @throws JSONException if JSON is invalid.
      */
-    static private ArrayList<Feature> parseFeatures(@NonNull JSONArray rawFeaturesArray, @Nullable JSONArray rawLocalizedFeaturesArray) throws JSONException {
+    static private ArrayList<Feature> parseFeatures(@NonNull JSONArray rawFeaturesArray, @Nullable JSONArray rawLocalizedFeaturesArray, @Nullable JSONArray subFeaturesArray) throws JSONException {
         ArrayList<Feature> features = new ArrayList<>();
 
         for (int i = 0; i < rawFeaturesArray.length(); i++) {
@@ -348,7 +401,23 @@ public class VendorList implements Parcelable {
                 }
             }
 
-            features.add(new Feature(id, name, description));
+            if ( subFeaturesArray != null) {
+                try {
+                    for (int idx = 0; idx < subFeaturesArray.length(); idx++) {
+                        JSONObject subFeature = (JSONObject) subFeaturesArray.get(idx);
+
+                        if (subFeature.getInt(JSONKey.Features.ID) == id) {
+                            features.add(new Feature(id, name, description));
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // if unable to parse feature JSON, accept feature by default
+                    features.add(new Feature(id, name, description));
+                }
+            } else {
+                features.add(new Feature(id, name, description));
+            }
         }
 
         return features;
@@ -357,17 +426,30 @@ public class VendorList implements Parcelable {
     /**
      * Parse a collection of vendors.
      *
-     * @param rawVendorsArray A collection of features in JSON format.
+     * @param rawVendorsArray A collection of vendors in JSON format.
+     * @param subVendorsArray A collection of id of vendors in JSON format.
      * @return An ArrayList of vendors, or throw an exception if the JSON is invalid.
      * @throws JSONException if JSON is invalid.
      */
-    static private ArrayList<Vendor> parseVendors(@NonNull JSONArray rawVendorsArray) throws JSONException {
+    static private ArrayList<Vendor> parseVendors(@NonNull JSONArray rawVendorsArray, @Nullable JSONArray subVendorsArray) throws JSONException {
         ArrayList<Vendor> vendors = new ArrayList<>();
+        ArrayList<Integer> whitelistedVendor = new ArrayList<>();
+
+        if (subVendorsArray != null){
+            for (int i = 0; i < subVendorsArray.length(); i++) {
+                whitelistedVendor.add(Integer.valueOf(((JSONObject)subVendorsArray.get(Integer.valueOf(i))).getInt("id")));
+            }
+        }
 
         for (int i = 0; i < rawVendorsArray.length(); i++) {
             JSONObject rawVendor = (JSONObject) rawVendorsArray.get(i);
 
             int id = rawVendor.getInt(JSONKey.Vendors.ID);
+            if (subVendorsArray != null) {
+                if (!whitelistedVendor.contains(Integer.valueOf(id))) {
+                    continue;
+                }
+            }
             String name = rawVendor.getString(JSONKey.Vendors.NAME);
 
             String policyURLString = rawVendor.getString(JSONKey.Vendors.POLICY_URL);
@@ -380,8 +462,23 @@ public class VendorList implements Parcelable {
 
             JSONArray purposesJSON = rawVendor.getJSONArray(JSONKey.Vendors.PURPOSE_IDS);
             ArrayList<Integer> purposes = new ArrayList<>();
+            ArrayList<Integer> subPurposes = new ArrayList<>();
+
+            //Experimental support of the version 1.1 of pubvendor.json
+            if (subVendorsArray != null) {
+                JSONArray subPurposesArray = ((JSONObject)subVendorsArray.get(Integer.valueOf(i))).getJSONArray(JSONKey.Vendors.PURPOSE_IDS);
+                for (int j = 0; j < subPurposesArray.length(); j++) {
+                    subPurposes.add(Integer.valueOf(subPurposesArray.getInt(j)));
+                }
+            }
             for (int idx = 0; idx < purposesJSON.length(); idx++) {
-                purposes.add(purposesJSON.getInt(idx));
+                if (subPurposes.size() > 0) {
+                    if (subPurposes.contains(idx)) {
+                        purposes.add(purposesJSON.getInt(idx));
+                    }
+                } else {
+                    purposes.add(purposesJSON.getInt(idx));
+                }
             }
 
             JSONArray legPurposesJSON = rawVendor.getJSONArray(JSONKey.Vendors.LEGITIMATE_PURPOSE_IDS);

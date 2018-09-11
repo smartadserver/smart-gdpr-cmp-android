@@ -177,6 +177,10 @@ public class ConsentToolConfiguration {
 
     private String consentManagementEditorJson;
 
+    private boolean isPubVendorConfigured = false;
+
+    private String consentManagementDefaultPubVendorJsonURL;
+
     /**
      * Initialize a new instance of ConsentToolConfiguration.
      *
@@ -268,6 +272,13 @@ public class ConsentToolConfiguration {
         this.isEditorConfiguredWithURL = true;
         this.consentManagementDefaultEditorJsonURL   = consentManagementDefaultEditorJsonURL;
         this.consentManagementLocalizedEditorJsonURL = consentManagementLocalizedEditorJsonURL;
+
+        return this;
+    }
+
+    public ConsentToolConfiguration setPubVendorConfiguration(String consentManagementDefaultPubVendorJsonURL) {
+        this.isPubVendorConfigured = true;
+        this.consentManagementDefaultPubVendorJsonURL   = consentManagementDefaultPubVendorJsonURL;
 
         return this;
     }
@@ -484,5 +495,17 @@ public class ConsentToolConfiguration {
      */
     public String getConsentManagementEditorJson() {
         return this.consentManagementEditorJson;
+    }
+
+    /**
+     * @return true if pubvendor.json management si configured, false otherwise
+     */
+    public boolean isPubVendorConfigured() { return this.isPubVendorConfigured; }
+
+    /**
+     * @return The pubvendor json url string
+     */
+    public String getConsentManagementDefaultPubVendorJsonURL() {
+        return this.consentManagementDefaultPubVendorJsonURL;
     }
 }

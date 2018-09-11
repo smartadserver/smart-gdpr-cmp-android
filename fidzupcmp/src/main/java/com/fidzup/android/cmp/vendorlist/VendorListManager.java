@@ -38,6 +38,10 @@ public class VendorListManager {
     @NonNull
     VendorListURL vendorListURL;
 
+    // Representation of the sub vendor list URL.
+    @Nullable
+    String subVendorListURL = null;
+
     // The timer used to schedule the automatic refresh.
     private Timer timer;
 
@@ -120,6 +124,18 @@ public class VendorListManager {
     }
 
     /**
+     * Instantiate and return a new JSONAsyncTask used for the sub VendorList.
+     * Explicitly defined for test purpose.
+     *
+     * @param listener The listener to set to the JSONAsyncTask.
+     * @return a new JSONAsyncTask.
+     */
+    @VisibleForTesting
+    protected JSONAsyncTask getNewJSONAsyncTaskForSubVendorList(@NonNull JSONAsyncTaskListener listener) {
+        return new JSONAsyncTask(listener);
+    }
+
+    /**
      * Instantiate and return a new JSONAsyncTaskListener used for the download of the main vendor list.
      *
      * @return a new JSONAsyncTaskListener.
@@ -167,11 +183,33 @@ public class VendorListManager {
         return new JSONAsyncTaskListener() {
             @Override
             public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject localizedVendorListJSON) {
-                downloadingVendorsList = false;
-                try {
-                    listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
-                } catch (Exception e) {
-                    listener.onVendorListUpdateFail(e);
+                if (subVendorListURL == null) {
+                    downloadingVendorsList = false;
+                    try {
+                        listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
+                    } catch (Exception e) {
+                        listener.onVendorListUpdateFail(e);
+                    }
+                } else {
+                    long delay = retryInterval;
+
+                    try {
+                        // We succeed to retrieve the localized vendor list JSON.
+                        // Now, we try to download the sub vendor list JSON.
+                        JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForSubVendorList(getJSONAsyncTaskListenerForSubVendorList(vendorListJSON,localizedVendorListJSON));
+
+                        //noinspection unchecked
+                        jsonAsyncTask.execute(subVendorListURL);
+
+                        // Everything succeed, so we store the last vendor list refresh date.
+                        lastRefreshDate = new Date();
+                        delay = refreshInterval;
+                    } catch (Exception e) {
+                        downloadingVendorsList = false;
+                        listener.onVendorListUpdateFail(e);
+                    }
+
+                    scheduleTimerIfNeeded(delay);
                 }
             }
 
@@ -181,6 +219,36 @@ public class VendorListManager {
                 downloadingVendorsList = false;
                 try {
                     listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON));
+                } catch (Exception e) {
+                    listener.onVendorListUpdateFail(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * Instantiate and return a new JSONAsyncTaskListener used for the download of the sub vendor list, provided by the editor.
+     *
+     * @return a new JSONAsyncTaskListener.
+     */
+    private JSONAsyncTaskListener getJSONAsyncTaskListenerForSubVendorList(@NonNull final JSONObject vendorListJSON, @NonNull final JSONObject localizedVendorListJSON) {
+        return new JSONAsyncTaskListener() {
+            @Override
+            public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject subVendorListJSON) {
+                downloadingVendorsList = false;
+                try {
+                    listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON, subVendorListJSON));
+                } catch (Exception e) {
+                    listener.onVendorListUpdateFail(e);
+                }
+            }
+
+            @Override
+            public void JSONAsyncTaskDidFailDownloadingJSONObject() {
+                // We failed to get the sub vendor list.
+                downloadingVendorsList = false;
+                try {
+                    listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
                 } catch (Exception e) {
                     listener.onVendorListUpdateFail(e);
                 }
@@ -300,5 +368,23 @@ public class VendorListManager {
                 }
             }, delay);
         }
+    }
+
+    /**
+     * Set the Sub Vendor List URL. It cannot be static, as it needs to be hosted on Editor's side
+     *
+     * @return this
+     */
+    public VendorListManager setSubVendorListURL(String subVendorListURL) {
+        this.subVendorListURL = subVendorListURL;
+        return this;
+    }
+
+    /**
+     *
+     * @return String the sub vendor list URL
+     */
+    public String getSubVendorListURL() {
+        return this.subVendorListURL;
     }
 }

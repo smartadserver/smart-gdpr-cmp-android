@@ -12,12 +12,6 @@ import com.fidzup.android.cmp.Constants;
 
 public class EditorURL {
 
-    // The default URL used to build the URL
-    private String defaultURL = Constants.Editor.EditorDefaultEndPoint;
-
-    // The default URL used to build the URL
-    private String defaultLocalizedURL = Constants.Editor.EditorDefaultLocalizedEndPoint;
-
     // The actual URL of the editor.
     @NonNull
     private String URL;
@@ -32,8 +26,8 @@ public class EditorURL {
      * @return this
      */
     public EditorURL setDefaultURLs(String jsonURL, String localizedJsonURL) {
-        this.defaultURL = jsonURL;
-        this.defaultLocalizedURL = localizedJsonURL;
+        this.URL = jsonURL;
+        this.localizedURL = localizedJsonURL;
 
         return this;
     }
@@ -43,13 +37,21 @@ public class EditorURL {
      *
      * @param language The language of the user if a localized URL has to be used.
      */
-    public EditorURL(@Nullable Language language) {
-//        URL = Constants.Editor.EditorDefaultEndPoint;
-        URL = defaultURL;
+    public EditorURL(String jsonURL, String localizedJsonURL, @Nullable Language language) {
+        URL = jsonURL;
 
         if (language != null) {
-            localizedURL = defaultLocalizedURL.replace("{language}", language.toString());
+            localizedURL = localizedJsonURL.replace("{language}", language.toString());
         }
+    }
+
+
+    /**
+     * Initialize an EditorURL object that represents the latest editor.
+     *
+     * @param language The language of the user if a localized URL has to be used.
+     */
+    public EditorURL(@Nullable Language language) {
     }
 
     /**

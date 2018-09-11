@@ -142,15 +142,30 @@ If you are a vendor, and wanna be listed as a Geolocalized Ad vendor in the CMP,
 
 If you are an editor, and wanna change some translation, or add some regarding the 6th purpose, please also contact the Fidzup's DPO.
 
+## pubvendor.json Management
+
+If you want to limit the number of vendors in the CMP, you can adopt the _pubvendor.json_ [specification v1.0](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/pubvendors.json%20v1.0%20Draft%20for%20Public%20Comment.md).
+
+When this configuration is set, only vendors whitelisted in the pubvendor.json file will be displayed and managed in the CMP.
+
+To enable the management of it just pass a correct URL to the consentToolConfiguration.
+
+example:
+
+```java
+consentToolConfiguration.setPubVendorConfiguration("https://www.example.com/well-know-path/pubvendor.json");
+```
+
+Be aware that this parameter can only limit the number of vendors declared in the Global Vendor List, by defining a sub list of vendor's id. You can't add a vendor not defined in the Global Vendor List.
+
 ## Known limitations
 
 The current version of _FidzupCMP_ has the following limitations:
 
 * The consent tool UI is not customizable (except for static texts). You can however build your own UI and display it in the `consentManagerRequestsToShowConsentTool` listener method using the `vendorList` and the `consentString` parameters.
 * _AndroidTV_ apps are not supported.
-* The IAB specification allows publishers to display only a subset of purposes & vendors using a _pubvendors.json_ file, stored on their own infrastructure. _FidzupCMP_ does not implement this feature at this time.
 * No static texts are provided by default (you must provide them to `ConsentToolConfiguration`). The `homeScreenText` should be validated by your legal department.
-* _SmartCMP_ does not have any logic to know if GDPR applies or not based on user's location / age at this time. For the moment it is the publisher's responsibility to determine whether or not GDPR applies and if the consent tool UI should be shown to the user, as well as requesting permission to fetch location or other including / excluding criteria.
+* _FidzupCMP_ does not have any logic to know if GDPR applies or not based on user's location / age at this time. For the moment it is the publisher's responsibility to determine whether or not GDPR applies and if the consent tool UI should be shown to the user, as well as requesting permission to fetch location or other including / excluding criteria.
 
 ## License
 
