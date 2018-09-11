@@ -60,13 +60,16 @@ You must setup the CMP before using it. Start by creating a configuration object
                 R.string.cmp_alert_dialog_positive_button_title);
 ```
 
-If you wanna also manage your purposes in the CMP as an editor, you also need to set where to initialize the editor, by giving 2 URLs, or a fixed JSON String.
+If you wanna also manage your purposes in the CMP as an editor, you also need to set where to initialize the editor, by giving 2 URLs, or a fixed JSON String. `(If you choose the JSON String configuration, it's not possible to localize it for now)`
+
+You must follow the [JSON Editor file specifications](https://github.com/Fidzup/fidzup-gdpr-editor-json-spec) to be able to use this feature.
+
 Example giving 2 URLs:
 
 ```Java
   consentToolConfiguration.setEditorConfiguration(
-    "https://www.fidzup.com/editor/editor.json",
-    "https://www.fidzup.com/editor/editor-{language}.json");
+    "https://www.example.com/well-know-path/editor.json",
+    "https://www.example.com/well-know-path/editor-{language}.json");
 ```
 
 Example giving on JSON String:
@@ -114,6 +117,30 @@ Showing the consent tool is done using the method `showConsentTool()`. Note that
 On Android, the user can opt out for any tracking related to advertisement by enabling 'Limited Ad Tracking' in the OS settings. By default, the CMP does not handle this option and let the app developer choose how he wants to proceed if it has been enabled by the user. **Please note that not handling the 'Limited Ad Tracking' option properly is a violation of Google Play Store's terms & conditions. Your app might be removed from the store.**
 
 However, if you configure the CMP with the parameter `showConsentToolWhenLimitedAdTracking` set to _false_, it will handle the 'Limited Ad Tracking' option automatically. In case of limited ad tracking the CMP will not display the consent tool and will not call the delegate, but will instead store a consent string with no consent given for any purposes or vendors.
+
+## Fidzup Adaptations to IAB specifications
+
+To comply with the french regulator ([CNIL](https://www.cnil.fr)), Fidzup has added another purpose not managed by the IAB for now.
+Following the TCF Specification the list of [Purposes](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/Consent%20string%20and%20vendor%20list%20formats%20v1.1%20Final.md) supported does not include the geolocalized ads. So if you use this CMP, be aware that we add this 6th purpose:
+
+<table>
+  <tr>
+    <td>purpose number</td>
+    <td>purpose name</td>
+    <td>purpose description</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>Geolocalized Ad</td>
+    <td>We use your GPS, wifi or some bluetooth informations to target you and offer you better ads near your favorite shops.</td>
+  </tr>
+</table>
+
+We also add the management of this 6th purpose to some Vendors.
+
+If you are a vendor, and wanna be listed as a Geolocalized Ad vendor in the CMP, please contact the Fidzup's DPO, who manage the vendor list in a proper way.
+
+If you are an editor, and wanna change some translation, or add some regarding the 6th purpose, please also contact the Fidzup's DPO.
 
 ## Known limitations
 

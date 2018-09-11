@@ -27,7 +27,7 @@
   }, {
     "id": 6,
     "name": "Geolocated Ads",
-    "description": "We use the GPS informations to target you and offer you better ads near your favorite shops."
+    "description": "We use your GPS, wifi or some bluetooth informations to target you and offer you better ads near your favorite shops."
   }],
   "features": [{
     "id": 1,

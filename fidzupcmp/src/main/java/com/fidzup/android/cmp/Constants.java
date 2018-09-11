@@ -41,19 +41,15 @@ public class Constants {
         public static final String ConsentString              = "FidzupCMP_ConsentString";
         public static final String ParsedEditorPurposeConsent = "FidzupCMP_ParsedEditorPurposeConsents";
     }
-    // Editor configuration.
-    public class Editor {
-        public static final String EditorDefaultEndPoint          = "https://www.fidzup.com/editor/editor.json";
 
-        public static final String EditorDefaultLocalizedEndPoint = "https://www.fidzup.com/editor/editor-{language}.json";
-    }
-
-        // Vendor List configuration.
+    // Vendor List configuration.
+    // The files hosted on vendorlist.fidzup.mgr.consensu.org, are a copy of the ones hosted on vendorlist.consensu.org
+    // With the addition of a 6th purpose (Geolocalized ads), mandatory for the french regulator (CNIL)
     public class VendorList {
-        public static final String DefaultEndPoint                = "https://vendorlist.consensu.org/vendorlist.json";
-        public static final String VersionedEndPoint              = "https://vendorlist.consensu.org/v-{version}/vendorlist.json";
+        public static final String DefaultEndPoint                = "https://vendorlist.fidzup.mgr.consensu.org/vendorlist.json";
+        public static final String VersionedEndPoint              = "https://vendorlist.fidzup.mgr.consensu.org/v-{version}/vendorlist.json";
 
-        public static final String DefaultLocalizedEndPoint       = "https://vendorlist.consensu.org/purposes-{language}.json";
-        public static final String VersionedLocalizedEndPoint     = "https://vendorlist.consensu.org/purposes-{language}-{version}.json";
+        public static final String DefaultLocalizedEndPoint       = "https://vendorlist.fidzup.mgr.consensu.org/purposes-{language}.json";
+        public static final String VersionedLocalizedEndPoint     = "https://vendorlist.fidzup.mgr.consensu.org/v-{version}/purposes-{language}.json";
     }
 }
