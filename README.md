@@ -48,7 +48,7 @@ Download this repository then add the `FidzupCMP` module to your project through
 You must setup the CMP before using it. Start by creating a configuration object that will define how the first screen of the consent tool will look like:
 ```Java
   ConsentToolConfiguration consentToolConfiguration = new ConsentToolConfiguration(getApplicationContext(),
-                R.drawable.logo_smart,
+                R.drawable.logo_fidzup,
                 R.string.cmp_home_screen_text,
                 R.string.cmp_home_screen_manage_consent_button_title,
                 R.string.cmp_home_screen_close_button_title,
