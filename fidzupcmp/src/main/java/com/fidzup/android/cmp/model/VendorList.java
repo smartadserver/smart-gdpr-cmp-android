@@ -78,7 +78,6 @@ public class VendorList implements Parcelable {
     // A list of activated vendors.
     private ArrayList<Vendor> activatedVendors;
 
-
     /**
      * Initialize a list of vendors using direct parameters.
      *
@@ -102,7 +101,7 @@ public class VendorList implements Parcelable {
      * @param JSON The data representation of the vendor list JSON.
      * @throws JSONException is JSON is invalid.
      */
-    public VendorList(@NonNull JSONObject JSON) throws JSONException, MalformedURLException {
+    public VendorList(@NonNull JSONObject JSON) throws JSONException {
         this(JSON, null);
     }
 
@@ -304,7 +303,7 @@ public class VendorList implements Parcelable {
         ArrayList<Purpose> purposes = new ArrayList<>();
 
         for (int i = 0; i < rawPurposesArray.length(); i++) {
-            JSONObject rawPurpose = (JSONObject) rawPurposesArray.get(i);
+            JSONObject rawPurpose = rawPurposesArray.getJSONObject(i);
 
             int id = rawPurpose.getInt(JSONKey.Purposes.ID);
             String name = rawPurpose.getString(JSONKey.Purposes.NAME);
@@ -433,11 +432,12 @@ public class VendorList implements Parcelable {
      */
     static private ArrayList<Vendor> parseVendors(@NonNull JSONArray rawVendorsArray, @Nullable JSONArray subVendorsArray) throws JSONException {
         ArrayList<Vendor> vendors = new ArrayList<>();
+        ArrayList<Vendor> pubVendors = new ArrayList<>();
         ArrayList<Integer> whitelistedVendor = new ArrayList<>();
 
         if (subVendorsArray != null){
             for (int i = 0; i < subVendorsArray.length(); i++) {
-                whitelistedVendor.add(Integer.valueOf(((JSONObject)subVendorsArray.get(Integer.valueOf(i))).getInt("id")));
+                whitelistedVendor.add((subVendorsArray.getJSONObject(i)).getInt("id"));
             }
         }
 
@@ -445,11 +445,6 @@ public class VendorList implements Parcelable {
             JSONObject rawVendor = (JSONObject) rawVendorsArray.get(i);
 
             int id = rawVendor.getInt(JSONKey.Vendors.ID);
-            if (subVendorsArray != null) {
-                if (!whitelistedVendor.contains(Integer.valueOf(id))) {
-                    continue;
-                }
-            }
             String name = rawVendor.getString(JSONKey.Vendors.NAME);
 
             String policyURLString = rawVendor.getString(JSONKey.Vendors.POLICY_URL);
@@ -466,9 +461,27 @@ public class VendorList implements Parcelable {
 
             //Experimental support of the version 1.1 of pubvendor.json
             if (subVendorsArray != null) {
-                JSONArray subPurposesArray = ((JSONObject)subVendorsArray.get(Integer.valueOf(i))).getJSONArray(JSONKey.Vendors.PURPOSE_IDS);
-                for (int j = 0; j < subPurposesArray.length(); j++) {
-                    subPurposes.add(Integer.valueOf(subPurposesArray.getInt(j)));
+                if (whitelistedVendor.contains(id)) {
+                    // First find the pubvendor with this id
+                    JSONObject jsono = null;
+                    for (int j=0; j < subVendorsArray.length(); j++) {
+                        if (subVendorsArray.getJSONObject(j).getInt(JSONKey.Vendors.ID) == id) {
+                            jsono = subVendorsArray.getJSONObject(j);
+                            break;
+                        }
+                    }
+
+                    if (jsono != null) {
+                        // Test if it contains purpose
+                        JSONArray subPurposesArray = jsono.optJSONArray(JSONKey.Vendors.PURPOSE_IDS);
+
+                        if (subPurposesArray != null) {
+                            //Extract the purposes allowed for this vendor
+                            for (int j = 0; j < subPurposesArray.length(); j++) {
+                                subPurposes.add(subPurposesArray.getInt(j));
+                            }
+                        }
+                    }
                 }
             }
             for (int idx = 0; idx < purposesJSON.length(); idx++) {
@@ -476,9 +489,8 @@ public class VendorList implements Parcelable {
                     if (subPurposes.contains(idx)) {
                         purposes.add(purposesJSON.getInt(idx));
                     }
-                } else {
-                    purposes.add(purposesJSON.getInt(idx));
                 }
+                purposes.add(purposesJSON.getInt(idx));
             }
 
             JSONArray legPurposesJSON = rawVendor.getJSONArray(JSONKey.Vendors.LEGITIMATE_PURPOSE_IDS);
@@ -500,8 +512,17 @@ public class VendorList implements Parcelable {
                 // deletedDate can be undefined. No need to throw an exception.
             }
 
-            vendors.add(new Vendor(id, name, purposes, legPurposes, features, policyURL, deletedDate));
+            Vendor vendor = new Vendor(id, name, purposes, legPurposes, features, policyURL, deletedDate);
+            vendors.add(vendor);
+            if (subVendorsArray != null) {
+                if (whitelistedVendor.contains(id)) {
+                    pubVendors.add(vendor);
+                }
+            }
         }
+
+        if (subVendorsArray != null)
+            return pubVendors;
 
         return vendors;
     }

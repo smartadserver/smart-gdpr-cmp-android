@@ -35,7 +35,7 @@ public class EditorManager {
     private long retryInterval;
 
     // Representation of the vendor list URL.
-    @NonNull
+    @Nullable
     EditorURL editorURL;
 
     // The JSON String of the editor, if not refreshed by timer with URL.
@@ -76,6 +76,7 @@ public class EditorManager {
      * @param editorVersion     The wanted version of the editor (or the latest if -1).
      * @throws IllegalArgumentException if given language is not ISO 639-1.
      */
+    @SuppressWarnings("UnusedParameters") // editorVersion is not used for now, but we have to in the future
     public EditorManager(@NonNull EditorManagerListener listener, long refreshInterval, long retryInterval, @Nullable Language language, int editorVersion) throws IllegalArgumentException {
         this.listener = listener;
         this.refreshInterval = refreshInterval;
@@ -84,12 +85,14 @@ public class EditorManager {
 //        this.editorURL = new EditorURL(language);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public EditorManager setEditorURLs(String jsonURL, String localizedJsonURL) {
         this.editorURL = new EditorURL(jsonURL,localizedJsonURL,this.wantedLanguage);
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public EditorManager setEditorJSON(String json) {
         this.editorJson = json;
@@ -147,25 +150,27 @@ public class EditorManager {
         return new JSONAsyncTaskListener() {
             @Override
             public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject editorJSON) {
-                long delay = retryInterval;
+                if (editorURL != null) {
+                    long delay = retryInterval;
 
-                try {
-                    // We succeed to retrieve the editor JSON.
-                    // Now, we try to download the localized editor JSON.
-                    JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForLocalizedEditor(getJSONAsyncTaskListenerForLocalizedEditor(editorJSON));
+                    try {
+                        // We succeed to retrieve the editor JSON.
+                        // Now, we try to download the localized editor JSON.
+                        JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForLocalizedEditor(getJSONAsyncTaskListenerForLocalizedEditor(editorJSON));
 
-                    //noinspection unchecked
-                    jsonAsyncTask.execute(editorURL.getLocalizedURL());
+                        //noinspection unchecked
+                        jsonAsyncTask.execute(editorURL.getLocalizedURL());
 
-                    // Everything succeed, so we store the last vendor list refresh date.
-                    lastRefreshDate = new Date();
-                    delay = refreshInterval;
-                } catch (Exception e) {
-                    downloadingEditor = false;
-                    listener.onEditorUpdateFail(e);
+                        // Everything succeed, so we store the last vendor list refresh date.
+                        lastRefreshDate = new Date();
+                        delay = refreshInterval;
+                    } catch (Exception e) {
+                        downloadingEditor = false;
+                        listener.onEditorUpdateFail(e);
+                    }
+
+                    scheduleTimerIfNeeded(delay);
                 }
-
-                scheduleTimerIfNeeded(delay);
             }
 
             @Override
@@ -272,7 +277,7 @@ public class EditorManager {
      */
     @SuppressWarnings("unchecked")
     public void refreshEditor() {
-        if (!downloadingEditor) {
+        if (!downloadingEditor && editorURL != null) {
             downloadingEditor = true;
             JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForEditor(getJSONAsyncTaskListenerForEditor());
             jsonAsyncTask.execute(editorURL.getURL());
@@ -298,7 +303,7 @@ public class EditorManager {
      * @param editorVersion The editor version that must be downloaded.
      * @param listener          The listener that must be called.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"UnusedParameters", "unchecked"}) // editorVersion is not used for now. But we had to in the future
     public void getEditor(int editorVersion, @NonNull final EditorManagerListener listener) {
         JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForEditor(new JSONAsyncTaskListener() {
             @Override

@@ -20,6 +20,10 @@ public class VendorListURL {
     @Nullable
     private String localizedURL;
 
+    // The language the URL is localized against
+    @Nullable
+    private Language language;
+
     /**
      * Initialize a VendorListURL object that represents the latest vendor list.
      *
@@ -27,9 +31,10 @@ public class VendorListURL {
      */
     public VendorListURL(@Nullable Language language) {
         URL = Constants.VendorList.DefaultEndPoint;
+        this.language = language;
 
-        if (language != null) {
-            localizedURL = Constants.VendorList.DefaultLocalizedEndPoint.replace("{language}", language.toString());
+        if (this.language != null) {
+            localizedURL = Constants.VendorList.DefaultLocalizedEndPoint.replace("{language}", this.language.toString());
         }
     }
 
@@ -40,6 +45,7 @@ public class VendorListURL {
      * @param language The language of the user if a localized URL has to be used.
      */
     public VendorListURL(int version, @Nullable Language language) throws IllegalArgumentException {
+        this.language = language;
         if (version < 1) {
             Log.e("FidzupCMP", "VendorListURL can not be configured. The version must be greater than 0.");
             throw new IllegalArgumentException("Version can not be lower than 1");
@@ -47,8 +53,8 @@ public class VendorListURL {
 
         URL = Constants.VendorList.VersionedEndPoint.replace("{version}", "" + version);
 
-        if (language != null) {
-            localizedURL = Constants.VendorList.VersionedLocalizedEndPoint.replace("{language}", language.toString())
+        if (this.language != null) {
+            localizedURL = Constants.VendorList.VersionedLocalizedEndPoint.replace("{language}", this.language.toString())
                     .replace("{version}", "" + version);
         }
     }
@@ -67,5 +73,13 @@ public class VendorListURL {
     @Nullable
     public String getLocalizedURL() {
         return localizedURL;
+    }
+
+    /**
+     * @return the language used to localize this URL (or null if not defined)
+     */
+    @Nullable
+    public Language getLanguage() {
+        return language;
     }
 }

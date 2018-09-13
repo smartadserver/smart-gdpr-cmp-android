@@ -4,6 +4,7 @@ import android.accounts.NetworkErrorException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.fidzup.android.cmp.model.Language;
 import com.fidzup.android.cmp.model.VendorList;
@@ -147,6 +148,7 @@ public class VendorListManager {
                 long delay = retryInterval;
 
                 try {
+                    Log.i("FidzupCMP","getJSONAsyncTaskListenerForMainVendorList");
                     // We succeed to retrieve the vendor list JSON.
                     // Now, we try to download the localized vendor list JSON.
                     JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForLocalizedVendorList(getJSONAsyncTaskListenerForLocalizedVendorList(vendorListJSON));
@@ -181,46 +183,63 @@ public class VendorListManager {
      */
     private JSONAsyncTaskListener getJSONAsyncTaskListenerForLocalizedVendorList(@NonNull final JSONObject vendorListJSON) {
         return new JSONAsyncTaskListener() {
+
+            public void rawJSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject localizedVendorListJSON) {
+                downloadingVendorsList = false;
+                try {
+                    listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
+                } catch (Exception e) {
+                    listener.onVendorListUpdateFail(e);
+                }
+            }
+
+            public void setAsyncTaskSubVendor(@NonNull JSONObject vendorListJSON, @Nullable JSONObject localizedVendorListJSON) {
+                long delay = retryInterval;
+
+                try {
+                    Log.i("FidzupCMP","getJSONAsyncTaskListenerForLocalizedVendorList Sub");
+                    // We succeed to retrieve the localized vendor list JSON.
+                    // Now, we try to download the sub vendor list JSON.
+                    JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForSubVendorList(getJSONAsyncTaskListenerForSubVendorList(vendorListJSON,localizedVendorListJSON));
+
+                    //noinspection unchecked
+                    jsonAsyncTask.execute(subVendorListURL);
+
+                    // Everything succeed, so we store the last vendor list refresh date.
+                    lastRefreshDate = new Date();
+                    delay = refreshInterval;
+                } catch (Exception e) {
+                    downloadingVendorsList = false;
+                    listener.onVendorListUpdateFail(e);
+                }
+
+                scheduleTimerIfNeeded(delay);
+            }
+
             @Override
             public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject localizedVendorListJSON) {
+                Log.i("FidzupCMP","getJSONAsyncTaskListenerForLocalizedVendorList");
                 if (subVendorListURL == null) {
-                    downloadingVendorsList = false;
-                    try {
-                        listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
-                    } catch (Exception e) {
-                        listener.onVendorListUpdateFail(e);
-                    }
+                    rawJSONAsyncTaskDidSucceedDownloadingJSONObject(localizedVendorListJSON);
                 } else {
-                    long delay = retryInterval;
-
-                    try {
-                        // We succeed to retrieve the localized vendor list JSON.
-                        // Now, we try to download the sub vendor list JSON.
-                        JSONAsyncTask jsonAsyncTask = getNewJSONAsyncTaskForSubVendorList(getJSONAsyncTaskListenerForSubVendorList(vendorListJSON,localizedVendorListJSON));
-
-                        //noinspection unchecked
-                        jsonAsyncTask.execute(subVendorListURL);
-
-                        // Everything succeed, so we store the last vendor list refresh date.
-                        lastRefreshDate = new Date();
-                        delay = refreshInterval;
-                    } catch (Exception e) {
-                        downloadingVendorsList = false;
-                        listener.onVendorListUpdateFail(e);
-                    }
-
-                    scheduleTimerIfNeeded(delay);
+                    setAsyncTaskSubVendor(vendorListJSON,localizedVendorListJSON);
                 }
             }
 
             @Override
             public void JSONAsyncTaskDidFailDownloadingJSONObject() {
-                // We failed to get the localized vendor list.
-                downloadingVendorsList = false;
-                try {
-                    listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON));
-                } catch (Exception e) {
-                    listener.onVendorListUpdateFail(e);
+                //Special case, english purposes does not exists, because IAB push the english version directly in vendorlist
+                //But we want the pubvendors.json file to be managed
+                if (vendorListURL.getLanguage() != null && vendorListURL.getLanguage().toString().equals("en") && subVendorListURL != null) {
+                    setAsyncTaskSubVendor(vendorListJSON,null);
+                } else {
+                    // We failed to get the localized vendor list.
+                    downloadingVendorsList = false;
+                    try {
+                        listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON));
+                    } catch (Exception e) {
+                        listener.onVendorListUpdateFail(e);
+                    }
                 }
             }
         };
@@ -231,7 +250,7 @@ public class VendorListManager {
      *
      * @return a new JSONAsyncTaskListener.
      */
-    private JSONAsyncTaskListener getJSONAsyncTaskListenerForSubVendorList(@NonNull final JSONObject vendorListJSON, @NonNull final JSONObject localizedVendorListJSON) {
+    private JSONAsyncTaskListener getJSONAsyncTaskListenerForSubVendorList(@NonNull final JSONObject vendorListJSON, @Nullable final JSONObject localizedVendorListJSON) {
         return new JSONAsyncTaskListener() {
             @Override
             public void JSONAsyncTaskDidSucceedDownloadingJSONObject(@NonNull JSONObject subVendorListJSON) {
@@ -250,6 +269,7 @@ public class VendorListManager {
                 try {
                     listener.onVendorListUpdateSuccess(new VendorList(vendorListJSON, localizedVendorListJSON));
                 } catch (Exception e) {
+                    Log.e("FidzupCMP", "Dowloading SubVendor failed [" + subVendorListURL + "]");
                     listener.onVendorListUpdateFail(e);
                 }
             }
@@ -375,6 +395,7 @@ public class VendorListManager {
      *
      * @return this
      */
+    @SuppressWarnings("UnusedReturnValue")
     public VendorListManager setSubVendorListURL(String subVendorListURL) {
         this.subVendorListURL = subVendorListURL;
         return this;
@@ -384,6 +405,8 @@ public class VendorListManager {
      *
      * @return String the sub vendor list URL
      */
+    @SuppressWarnings("UnusedDeclaration") // We are in a library, and we want to expose method, even if we don't use it internally
+    @Nullable
     public String getSubVendorListURL() {
         return this.subVendorListURL;
     }

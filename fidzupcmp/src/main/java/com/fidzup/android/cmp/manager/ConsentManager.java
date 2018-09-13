@@ -439,7 +439,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
      *
      * @return true if all purposes have been added correctly, false otherwise.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("UnusedReturnValue")
     public boolean allowAllPurposes() {
         if (lastVendorList == null || !isConfigured) {
             logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before adding all purposes. Please try again later.");
@@ -472,7 +472,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
      *
      * @return true if all purposes have been removed correctly, false otherwise.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("UnusedReturnValue")
     public boolean revokeAllPurposes() {
         if (lastVendorList == null || !isConfigured) {
             logErrorMessage("The ConsentManager must be configured and the vendor list downloaded before revoking all purposes. Please try again later.");

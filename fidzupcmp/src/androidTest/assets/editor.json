@@ -26,7 +26,7 @@
     "description": "The collection of information about your use of the content, and combination with previously collected information, used to measure, understand, and report on your usage of the content."
   }, {
     "id": 6,
-    "name": "Geolocated Ads",
+    "name": "Geolocalized Ads",
     "description": "We use your GPS, wifi or some bluetooth informations to target you and offer you better ads near your favorite shops."
   }],
   "features": [{

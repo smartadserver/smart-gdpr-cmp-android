@@ -1,21 +1,22 @@
 apply plugin: 'com.android.library'
+apply from: 'maven-push.gradle'
 
 // Current version of the cmp
 def cmpVersion = 7
 def cmpVersionName = "7"
-def mavenPassword = System.getenv("MAVEN_PASSWORD")
+//def mavenPassword = System.getenv("MAVEN_PASSWORD")
 
 group = "com.fidzup.android"
 version cmpVersionName
 
-// packagecloud.io requirement
+// Maven Central Repository requirement
 apply plugin: 'maven'
+/*
 
 // packagecloud.io requirement
 configurations {
     deployerJars
 }
-
 uploadArchives {
     if (project.hasProperty('isSnapshot') && project.findProperty('isSnapshot') == 'true') {
         version = version + "-SNAPSHOT"
@@ -28,7 +29,7 @@ uploadArchives {
         }
     }
 }
-
+*/
 android {
     compileSdkVersion 27
 
@@ -60,11 +61,14 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
+    implementation 'com.android.support:support-media-compat:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     // packagecloud.io requirement
-    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
+//    deployerJars "io.packagecloud.maven.wagon:maven-packagecloud-wagon:0.0.6"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }

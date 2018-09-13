@@ -66,6 +66,7 @@ public class FidzupCMPDemoApplication extends MultiDexApplication implements Con
                 R.string.cmp_alert_dialog_negative_button_title,
                 R.string.cmp_alert_dialog_positive_button_title);
         consentToolConfiguration.setEditorConfiguration("https://www.fidzup.com/editor/editor.json","https://www.fidzup.com/editor/editor-{language}.json");
+        consentToolConfiguration.setPubVendorConfiguration("https://www.fidzup.com/editor/pubvendor.json");
         return consentToolConfiguration;
     }
 
