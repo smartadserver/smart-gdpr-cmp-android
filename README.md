@@ -22,7 +22,22 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
 
 #### Using Gradle (recommended)
 
-We are working on publishing our artifact on a Maven repo... Until done, please use the git repository directly ;-)
+1. In the main `build.gradle` of your project, declare the repository
+
+        allprojects {
+            repositories {
+                mavenCentral()
+            }
+        }
+
+2. In the `build.gradle` file corresponding to your application module, you can now import the `FidzupCMP` by declaring it in the _dependencies_ section
+
+        dependencies {
+            // …
+
+            // add FidzupCMP
+            implementation 'com.fidzup.android.cmp:fidzup-android-cmp:1.0.0@aar'
+        }
 
 #### From the Git repository
 
@@ -88,7 +103,7 @@ Call the `configure()` method on `ConsentManager.getSharedInstance()` to start t
 
       ConsentToolConfiguration consentToolConfiguration = // create your own ConsentToolConfiguration
 
-      // Configure the SmartCMP
+      // Configure the FidzupCMP
       ConsentManager.getSharedInstance().configure(this, language, consentToolConfiguration);
     }
   }
@@ -142,18 +157,18 @@ If you are a vendor, and wanna be listed as a Geolocalized Ad vendor in the CMP,
 
 If you are an editor, and wanna change some translation, or add some regarding the 6th purpose, please also contact the Fidzup's DPO.
 
-## pubvendor.json Management
+## pubvendors.json Management
 
-If you want to limit the number of vendors in the CMP, you can adopt the _pubvendor.json_ [specification v1.0](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/pubvendors.json%20v1.0%20Draft%20for%20Public%20Comment.md).
+If you want to limit the number of vendors in the CMP, you can adopt the _pubvendors.json_ [specification v1.0](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/pubvendors.json%20v1.0%20Draft%20for%20Public%20Comment.md).
 
-When this configuration is set, only vendors whitelisted in the pubvendor.json file will be displayed and managed in the CMP.
+When this configuration is set, only vendors whitelisted in the pubvendors.json file will be displayed and managed in the CMP.
 
 To enable the management of it just pass a correct URL to the consentToolConfiguration.
 
 example:
 
 ```java
-consentToolConfiguration.setPubVendorConfiguration("https://www.example.com/well-know-path/pubvendor.json");
+consentToolConfiguration.setPubVendorConfiguration("https://www.example.com/well-know-path/pubvendors.json");
 ```
 
 Be aware that this parameter can only limit the number of vendors declared in the Global Vendor List, by defining a sub list of vendor's id. You can't add a vendor not defined in the Global Vendor List.
@@ -162,6 +177,7 @@ Be aware that this parameter can only limit the number of vendors declared in th
 
 The current version of _FidzupCMP_ has the following limitations:
 
+* You can't add a vendor not listed in the IAB's Global Vendor List
 * The consent tool UI is not customizable (except for static texts). You can however build your own UI and display it in the `consentManagerRequestsToShowConsentTool` listener method using the `vendorList` and the `consentString` parameters.
 * _AndroidTV_ apps are not supported.
 * No static texts are provided by default (you must provide them to `ConsentToolConfiguration`). The `homeScreenText` should be validated by your legal department.
