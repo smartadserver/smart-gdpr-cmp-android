@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- This color is customizable. Just declare a color in your app colors.xml file with the name "actionButtonColor" -->
-    <color name="actionButtonColor">#48F</color>
+    <color name="actionButtonColor">#4488ff</color>
 </resources>

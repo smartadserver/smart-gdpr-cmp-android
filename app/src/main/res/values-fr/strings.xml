@@ -1,13 +1,16 @@
 <resources>
     <string name="app_name">FidzupCMP Demo App</string>
+    <string name="list_vendor_popup"><u>Liste des partenaires</u></string>
 
     <!-- ConsentToolActivity -->
     <string name="cmp_home_screen_text">Lors de l\'utilisation de l\'application, en plus des données personnelles que nous collectons pour les besoins du service, nos partenaires sont susceptibles de collecter des données vous concernant, liées à votre appareil mobile (adresse MAC de la puce Wifi, identifiant publicitaire) ainsi que vos données de géolocalisation.\n
 \n
 Ces données sont susceptibles d\'être traitées dans le but de vous fournir de la publicité ciblée, adaptée à vos centres d\'intérêts, personnalisée en fonction de l\'endroit où vous vous trouvez et de votre profil.\n
 \n
-En cliquant sur J\'accepte, vous donnez votre accord pour la collecte et le traitement de ces données par l\’éditeur et ses partenaires. Vous pouvez personnaliser et gérer vos choix à tout moment en cliquant sur\n
-\"Gérer mes paramètres\"
+En cliquant sur J\'accepte, vous donnez votre accord pour la collecte et le traitement de ces données par l\’éditeur et ses partenaires. Vous pouvez personnaliser et gérer vos choix à tout moment en cliquant sur
+\"Gérer mes paramètres\".\n
+\n
+Pour connaitre la liste exacte de nos partenaires marketing, et vérifier la durée de conservation de vos données auprès de chacun d\'entre eux, vous pouvez cliquer sur le lien \"Liste des partenaires\"
 </string>
     <string name="cmp_home_screen_manage_consent_button_title">Gérer mes paramètres</string>
     <string name="cmp_home_screen_close_button_title">J\'accepte</string>

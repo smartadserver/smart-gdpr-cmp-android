@@ -25,6 +25,7 @@ public class ConsentToolActivity extends AppCompatActivity {
 
     static private final int PREFERENCES_REQUEST_CODE = 0;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,5 +123,13 @@ public class ConsentToolActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(config.getConsentManagementAlertDialogNegativeButtonTitle(), null)
                 .show();
+    }
+
+    public void onVendorListClick(View view) {
+        // Start the VendorListActivity
+        Intent intent = new Intent(getApplicationContext(), VendorListActivity.class);
+        intent.putExtra("consent_string", getIntent().getParcelableExtra("consent_string"));
+        intent.putExtra("vendor_list", getIntent().getParcelableExtra("vendor_list"));
+        startActivityForResult(intent, PREFERENCES_REQUEST_CODE);
     }
 }
