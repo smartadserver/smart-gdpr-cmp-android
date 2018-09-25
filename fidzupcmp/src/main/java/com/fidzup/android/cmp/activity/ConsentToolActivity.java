@@ -24,6 +24,7 @@ import com.fidzup.android.cmp.model.ConsentToolConfiguration;
 public class ConsentToolActivity extends AppCompatActivity {
 
     static private final int PREFERENCES_REQUEST_CODE = 0;
+    static private final int VENDOR_REQUEST_CODE = 1;
 
 
     @Override
@@ -91,9 +92,9 @@ public class ConsentToolActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            return;
-        }
+
+        if (requestCode == VENDOR_REQUEST_CODE) return;
+        if (resultCode != RESULT_OK) return;
 
         // Return the new consent string.
         ConsentString consentString = data.getParcelableExtra("consent_string");
@@ -128,8 +129,9 @@ public class ConsentToolActivity extends AppCompatActivity {
     public void onVendorListClick(View view) {
         // Start the VendorListActivity
         Intent intent = new Intent(getApplicationContext(), VendorListActivity.class);
-        intent.putExtra("consent_string", getIntent().getParcelableExtra("consent_string"));
-        intent.putExtra("vendor_list", getIntent().getParcelableExtra("vendor_list"));
-        startActivityForResult(intent, PREFERENCES_REQUEST_CODE);
+        intent.putExtra(VendorListActivity.EXTRA_CONTENTSTRING, getIntent().getParcelableExtra("consent_string"));
+        intent.putExtra(VendorListActivity.EXTRA_VENDORLIST, getIntent().getParcelableExtra("vendor_list"));
+        intent.putExtra(VendorListActivity.EXTRA_READONLY, true);
+        startActivityForResult(intent, VENDOR_REQUEST_CODE);
     }
 }

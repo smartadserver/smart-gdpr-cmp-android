@@ -394,8 +394,8 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                             // Start the VendorListActivity
                             Intent intent = new Intent(getApplicationContext(), VendorListActivity.class);
 //                            intent.putExtra("editor", editor);
-                            intent.putExtra("vendor_list", vendorList);
-                            intent.putExtra("consent_string", consentString);
+                            intent.putExtra(VendorListActivity.EXTRA_VENDORLIST, vendorList);
+                            intent.putExtra(VendorListActivity.EXTRA_CONTENTSTRING, consentString);
                             startActivityForResult(intent, VENDORS_LIST_ACTIVITY_REQUEST_CODE);
                         }
                     });

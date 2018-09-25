@@ -29,8 +29,13 @@ import com.fidzup.android.cmp.model.VendorList;
 
 public class VendorListActivity extends AppCompatActivity {
 
+    final static String EXTRA_CONTENTSTRING = "contentString";
+    final static String EXTRA_VENDORLIST = "vendorList";
+    final static String EXTRA_READONLY = "readOnly";
+
     ConsentString consentString;
     VendorList vendorList;
+    boolean isReadOnly = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,8 +51,9 @@ public class VendorListActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        consentString = getIntent().getParcelableExtra("consent_string");
-        vendorList = getIntent().getParcelableExtra("vendor_list");
+        consentString = getIntent().getParcelableExtra(this.EXTRA_CONTENTSTRING);
+        vendorList = getIntent().getParcelableExtra(this.EXTRA_VENDORLIST);
+        isReadOnly = getIntent().getExtras().getBoolean(this.EXTRA_READONLY, false);
 
         // Setup the recycler view
         RecyclerView recyclerView = findViewById(R.id.vendor_recycler_view);
@@ -134,6 +140,12 @@ public class VendorListActivity extends AppCompatActivity {
         @NonNull
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vendor_cell, parent, false);
+
+            int toShow = isReadOnly ? R.id.vendor_next_icon : R.id.vendor_status_switch;
+            int toHide = isReadOnly ? R.id.vendor_status_switch : R.id.vendor_next_icon;
+            v.findViewById(toShow).setVisibility(View.VISIBLE);
+            v.findViewById(toHide).setVisibility(View.GONE);
+
             return new VendorViewHolder(v);
         }
 
