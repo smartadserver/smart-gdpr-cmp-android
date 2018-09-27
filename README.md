@@ -118,6 +118,32 @@ The current version of _SmartCMP_ has the following limitations:
 * The IAB specification allows publishers to display only a subset of purposes & vendors using a _pubvendors.json_ file, stored on their own infrastructure. _SmartCMP_ does not implement this feature at this time.
 * No static texts are provided by default (you must provide them to `ConsentToolConfiguration`). The `homeScreenText` should be validated by your legal department.
 * _SmartCMP_ does not have any logic to know if GDPR applies or not based on user's location / age at this time. For the moment it is the publisher's responsibility to determine whether or not GDPR applies and if the consent tool UI should be shown to the user, as well as requesting permission to fetch location or other including / excluding criteria.
+* _SmartCMP_ is only supported on _Android 5.0+_. If you still want to use it on older Android devices, you will need to update your SSL provider.
+
+## Older Android devices: SSL provider update
+
+If you try to use _SmartCMP_ on older devices, you might have issues with the vendor list retrieval that will always fail due to a certificate error.
+
+You can workaround this issue be updating the SSL provider used by the application by importing _Google Play Services — Base_:
+
+    implementation 'com.google.android.gms:play-services-base:15.0.1'
+
+then requesting an SSL provider update just after the configure() method call by using:
+
+    // Updating the SSL provider might be necessary on older devices, otherwise HTTPS calls will fail
+    ProviderInstaller.installIfNeededAsync(this, new ProviderInstaller.ProviderInstallListener() {
+        @Override
+        public void onProviderInstalled() {
+            // Provider is up-to-date, app can make secure network calls.
+            ConsentManager.getSharedInstance().refreshVendorList();
+        }
+
+        @Override
+        public void onProviderInstallFailed(int i, Intent intent) {
+            // Provider can't be installed, SSL calls might fail
+            Log.e("SmartCMP", "Can't install/update the SSL provider, SSL calls might fail on older devices");
+        }
+    });
 
 ## License
 
