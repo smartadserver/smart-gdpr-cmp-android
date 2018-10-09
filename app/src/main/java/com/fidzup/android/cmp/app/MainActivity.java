@@ -14,6 +14,7 @@ import com.fidzup.android.cmp.manager.ConsentManager;
 public class MainActivity extends AppCompatActivity {
 
     static private final String IAB_CONSENT_STRING_KEY = "IABConsent_ConsentString";
+    static private final String FULL_CONSENT_STRING_KEY = "FidzupCMP_ConsentString";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // Read GDPR ConsentString value from SharedPreferences and display it on the screen.
-        String consentString = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(IAB_CONSENT_STRING_KEY, "No consent string stored yet.");
+        String iabConsentString = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(IAB_CONSENT_STRING_KEY, "No consent string stored yet.");
+        String consentString = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(FULL_CONSENT_STRING_KEY, "No consent string stored yet.");
         TextView consentStringTextView = findViewById(R.id.consentstring_textview);
-        consentStringTextView.setText(consentString);
+        consentStringTextView.setText("IAB:\n" + iabConsentString + "\n\nFull:\n" + consentString);
     }
 }
