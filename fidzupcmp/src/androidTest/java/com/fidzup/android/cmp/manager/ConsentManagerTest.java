@@ -38,7 +38,7 @@ public class ConsentManagerTest {
     private void cleanSharedPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(InstrumentationRegistry.getContext());
         SharedPreferences.Editor editor = prefs.edit();
-        String[] keys = {Constants.IABConsentKeys.ConsentString, Constants.IABConsentKeys.ParsedPurposeConsent, Constants.IABConsentKeys.ParsedVendorConsent, Constants.IABConsentKeys.SubjectToGDPR, Constants.AdvertisingConsentStatus.Key};
+        String[] keys = {Constants.IABConsentKeys.ConsentString, Constants.IABConsentKeys.ParsedPurposeConsent, Constants.IABConsentKeys.ParsedVendorConsent, Constants.IABConsentKeys.SubjectToGDPR, Constants.FidzupCMPConsentKeys.AdvertisingConsentStatus};
         for (String key : keys) {
             editor.remove(key);
         }
@@ -54,14 +54,14 @@ public class ConsentManagerTest {
     @Test
     public void testSaveConsentString() {
         // First value is null
-        String initialValue = getStringForSharedPreferences(Constants.IABConsentKeys.ConsentString);
+        String initialValue = getStringForSharedPreferences(Constants.FidzupCMPConsentKeys.ConsentString);
         Assert.assertNull(initialValue);
 
         // Save string to SharedPreferences
-        String newValue = "BOEFBi5OEFBi5ABACDENABwAAAAAZoA";
+        String newValue = "BOVXz-kOVXz_iC-AHAFRAGBshAAA_AAAAhGACABaAhE";
         ConsentManager.getSharedInstance().setConsentString(newValue);
 
-        String readValue = getStringForSharedPreferences(Constants.IABConsentKeys.ConsentString);
+        String readValue = getStringForSharedPreferences(Constants.FidzupCMPConsentKeys.ConsentString);
         Assert.assertEquals(newValue, readValue);
     }
 
@@ -117,6 +117,7 @@ public class ConsentManagerTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentManager.getSharedInstance().setConsentString(consentString);
@@ -149,6 +150,7 @@ public class ConsentManagerTest {
                 1,
                 1,
                 6,
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -183,12 +185,13 @@ public class ConsentManagerTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentManager.getSharedInstance().setConsentString(consentString1);
 
         // Check saved value
-        String readValue1 = getStringForSharedPreferences(Constants.AdvertisingConsentStatus.Key);
+        String readValue1 = getStringForSharedPreferences(Constants.FidzupCMPConsentKeys.AdvertisingConsentStatus);
         Assert.assertEquals("0", readValue1);
 
         // Set a consent string that consent to advertising purpose.
@@ -196,7 +199,7 @@ public class ConsentManagerTest {
         ConsentManager.getSharedInstance().setConsentString(consentString2);
 
         // Check saved value
-        String readValue2 = getStringForSharedPreferences(Constants.AdvertisingConsentStatus.Key);
+        String readValue2 = getStringForSharedPreferences(Constants.FidzupCMPConsentKeys.AdvertisingConsentStatus);
         Assert.assertEquals("1", readValue2);
     }
 

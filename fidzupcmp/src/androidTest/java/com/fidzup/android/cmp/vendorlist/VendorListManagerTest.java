@@ -119,7 +119,7 @@ public class VendorListManagerTest {
         vlManager.refreshVendorList();
         expectationVendorListRetrieved.assertFulfilled(2000);
     }
-
+/*
     @Test
     public void testVendorListCanBeRetrieveManuallyForCustomVersionOnce() {
         final Expectation expectationVendorListRetrieved = new Expectation("VendorList retrieved");
@@ -178,7 +178,7 @@ public class VendorListManagerTest {
 
         expectationVendorListRetrieved.assertFulfilled(2000);
     }
-
+*/
     @Test
     public void testVendorListRefreshCanFailWithInvalidJSON() {
         final Expectation vendorListManagerShouldFail = new Expectation("VendorListManager should failed with JSONException");
