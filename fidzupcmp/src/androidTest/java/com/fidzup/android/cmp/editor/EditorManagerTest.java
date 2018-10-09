@@ -119,7 +119,7 @@ public class EditorManagerTest {
         vlManager.refreshEditor();
         expectationEditorRetrieved.assertFulfilled(2000);
     }
-/*
+
     @Test
     public void testEditorCanBeRetrieveManuallyForCustomVersionOnce() {
         final Expectation expectationEditorRetrieved = new Expectation("Editor retrieved");
@@ -178,7 +178,7 @@ public class EditorManagerTest {
 
         expectationEditorRetrieved.assertFulfilled(2000);
     }
-*/
+
     @Test
     public void testEditorRefreshCanFailWithInvalidJSON() {
         final Expectation editorManagerShouldFail = new Expectation("EditorManager should failed with JSONException");
