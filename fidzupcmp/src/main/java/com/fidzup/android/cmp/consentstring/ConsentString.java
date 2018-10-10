@@ -1694,8 +1694,10 @@ public class ConsentString implements Parcelable {
             consentString = consentStringByRemovingPurposeConsent(purpose.getId(), consentString, lastUpdated);
         }
 
-        for (Purpose purpose : editor.getPurposes()) {
-            consentString = consentStringByRemovingEditorPurposeConsent(purpose.getId(), consentString, lastUpdated);
+        if (editor != null) {
+            for (Purpose purpose : editor.getPurposes()) {
+                consentString = consentStringByRemovingEditorPurposeConsent(purpose.getId(), consentString, lastUpdated);
+            }
         }
 
         return consentString;
