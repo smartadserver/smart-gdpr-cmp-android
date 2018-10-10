@@ -52,6 +52,10 @@ public class JSONAsyncTask extends AsyncTask {
             // Retrieve the URL given in parameters
             String rawJSONURL = (String) objects[0];
             try {
+                // Android 4.4 device not up 2 date, cannot use TLSv1.2 or TLSV1.2, so fallback to http.
+                if (android.os.Build.VERSION.SDK_INT == 19) {
+                    rawJSONURL = rawJSONURL.replaceFirst("^(https://)","http://");
+                }
                 JSONURL = new URL(rawJSONURL);
             } catch (MalformedURLException ignored) {
             }
