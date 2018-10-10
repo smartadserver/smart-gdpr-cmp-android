@@ -271,6 +271,14 @@ public class ConsentString implements Parcelable {
                          @NonNull ArrayList<Integer> allowedPurposes,
                          @NonNull ArrayList<Integer> allowedVendors) {
 
+        int editorVersion;
+
+        if (editor == null) {
+            editorVersion = 0;
+        }else {
+            editorVersion = editor.getVersion();
+        }
+
         init(versionConfig,
                 created,
                 lastUpdated,
@@ -278,7 +286,7 @@ public class ConsentString implements Parcelable {
                 cmpVersion,
                 consentScreen,
                 consentLanguage,
-                editor.getVersion(),
+                editorVersion,
                 vendorList.getVersion(),
                 vendorList.getMaxVendorId(),
                 editorPurposes,
