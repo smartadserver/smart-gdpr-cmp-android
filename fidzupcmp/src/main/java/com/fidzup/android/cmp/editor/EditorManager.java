@@ -321,7 +321,7 @@ public class EditorManager {
             }
         });
 
-        jsonAsyncTask.execute(new EditorURL(null).getURL());
+        jsonAsyncTask.execute(editorURL.getURL());
 
     }
 

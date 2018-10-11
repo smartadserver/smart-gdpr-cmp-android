@@ -148,7 +148,7 @@ public class VendorListManagerTest {
                         if (objects.length > 0) {
                             // Retrieve the URL given in parameters and check its the right value
                             String rawJSONURL = (String) objects[0];
-                            Assert.assertEquals("https://vendorlist.consensu.org/v-42/vendorlist.json", rawJSONURL);
+                            Assert.assertEquals("https://vendorlist.fidzup.mgr.consensu.org/v-42/vendorlist.json", rawJSONURL);
                         } else {
                             Assert.fail("There is no URL given to the JSONAsyncTask");
                         }

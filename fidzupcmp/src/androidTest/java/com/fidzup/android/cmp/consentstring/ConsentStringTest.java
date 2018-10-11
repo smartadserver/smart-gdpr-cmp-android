@@ -97,6 +97,7 @@ public class ConsentStringTest {
                 8,
                 9,
                 new ArrayList<>(Collections.singletonList(1)),
+                new ArrayList<>(Collections.singletonList(1)),
                 new ArrayList<>(Collections.singletonList(2)));
 
         ConsentString consentString2 = new ConsentString(new VersionConfig(1),
@@ -109,6 +110,7 @@ public class ConsentStringTest {
                 1,
                 8,
                 9,
+                new ArrayList<>(Collections.singletonList(1)),
                 new ArrayList<>(Collections.singletonList(1)),
                 new ArrayList<>(Collections.singletonList(2)));
 
@@ -123,7 +125,8 @@ public class ConsentStringTest {
                 9,
                 10,
                 new ArrayList<>(Arrays.asList(1, 2)),
-                new ArrayList<>(Arrays.asList(2, 5)));
+                new ArrayList<>(Arrays.asList(2, 5)),
+                new ArrayList<>(Arrays.asList(5, 7)));
 
         Assert.assertEquals(consentString1, consentString2);
         Assert.assertNotSame(consentString1, consentString3);
@@ -148,10 +151,11 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 ConsentString.ConsentEncoding.BITFIELD);
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getIABConsentString());
     }
 
     @Test
@@ -173,9 +177,10 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getIABConsentString());
     }
 
     @Test
@@ -196,9 +201,10 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENAGwAAAACdoAAAAAA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENAGwAAAACdoAAAAAA", consentString.getIABConsentString());
     }
 
     @Test
@@ -220,6 +226,7 @@ public class ConsentStringTest {
                     1,
                     1,
                     6,
+                    new ArrayList<>(Arrays.asList(1, 2)),
                     new ArrayList<>(Arrays.asList(1, 2)),
                     new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -248,10 +255,11 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 ConsentString.ConsentEncoding.RANGE);
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAaACgACAAQABA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAaACgACAAQABA", consentString.getIABConsentString());
     }
 
     @Test
@@ -272,6 +280,7 @@ public class ConsentStringTest {
                 1,
                 1,
                 6,
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 ConsentString.ConsentEncoding.BITFIELD);
@@ -301,6 +310,7 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 ConsentString.ConsentEncoding.RANGE);
 
@@ -329,10 +339,11 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(2, 1)),
+                new ArrayList<>(Arrays.asList(2, 1)),
                 new ArrayList<>(Arrays.asList(4, 2, 1)),
                 ConsentString.ConsentEncoding.BITFIELD);
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getIABConsentString());
     }
 
     @Test
@@ -354,10 +365,11 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(4, 2, 1)),
                 ConsentString.ConsentEncoding.RANGE);
 
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAaACgACAAQABA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAaACgACAAQABA", consentString.getIABConsentString());
     }
 
     @Test
@@ -379,11 +391,12 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 ConsentString.ConsentEncoding.AUTOMATIC);
 
         // Bitfield encoding will be chosen as it leads to a shorter consent string.
-        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getConsentString());
+        Assert.assertEquals("BOEFBi5OEFBi5ABACDENABwAAAAAZoA", consentString.getIABConsentString());
     }
 
     @Test
@@ -405,9 +418,10 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString consentString = ConsentString.fromBase64String("BOEFBi5OEFBi5ABACDENABwAAAAAZoA");
+        ConsentString consentString = ConsentString.fromBase64String("BOEFBi5OEFBi5ABACDENABABwAAAwAAAAAZo");
 
         Assert.assertNotNull(consentString);
         Assert.assertEquals(expected, consentString);
@@ -432,9 +446,10 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString consentString = ConsentString.fromBase64String("BOEFBi5OEFBi5ABACDENABwAAAAAaACgACAAQABA");
+        ConsentString consentString = ConsentString.fromBase64String("BOEFBi5OEFBi5ABACDENABABwAAAwAAAAAZo");
 
         Assert.assertNotNull(consentString);
         Assert.assertEquals(expected, consentString);
@@ -476,6 +491,7 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         Assert.assertTrue(consentString.isPurposeAllowed(1));
@@ -503,6 +519,7 @@ public class ConsentStringTest {
                     1,
                     1,
                     6,
+                    new ArrayList<>(Arrays.asList(1, 2)),
                     new ArrayList<>(Arrays.asList(1, 2)),
                     new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -534,6 +551,7 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         Assert.assertEquals("110000000000000000000000", consentString.parsedPurposeConsents());
@@ -558,6 +576,7 @@ public class ConsentStringTest {
                 1,
                 6,
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         Assert.assertEquals("110100", consentString.parsedVendorConsents());
@@ -581,6 +600,7 @@ public class ConsentStringTest {
                 1,
                 1,
                 6,
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -610,6 +630,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<Integer>(),
+                new ArrayList<Integer>(),
                 new ArrayList<Integer>());
 
         Assert.assertEquals(expectedConsentString, noConsentString);
@@ -631,6 +652,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6)),
                 new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)),
                 new ArrayList<>(Arrays.asList(8, 12, 28, 9, 27, 25, 26, 1, 6, 30, 24, 29, 39, 11, 15, 4, 7)));
 
@@ -656,6 +678,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedConsentString = new ConsentString(new VersionConfig(1),
@@ -667,6 +690,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getUpdatedVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 6, 7)),
                 new ArrayList<>(Arrays.asList(1, 2, 4, 40, 41, 42)));
 
@@ -694,6 +718,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedConsentString1 = new ConsentString(new VersionConfig(1),
@@ -705,6 +730,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -717,6 +743,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -746,6 +773,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedConsentString1 = new ConsentString(new VersionConfig(1),
@@ -757,6 +785,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Collections.singletonList(2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -769,6 +798,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -798,6 +828,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedString = new ConsentString(new VersionConfig(1),
@@ -809,10 +840,11 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6)),
                 new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString resultString = ConsentString.consentStringByAddingAllPurposeConsents(getVendorList(), consentString, updatedDate);
+        ConsentString resultString = ConsentString.consentStringByAddingAllPurposeConsents(getVendorList(), getEditor(),consentString, updatedDate);
 
         Assert.assertEquals(expectedString, resultString);
     }
@@ -836,9 +868,10 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString resultString = ConsentString.consentStringByAddingAllPurposeConsents(getUpdatedVendorList(), consentString);
+        ConsentString resultString = ConsentString.consentStringByAddingAllPurposeConsents(getUpdatedVendorList(),getEditor(), consentString);
         Assert.assertNull(resultString);
     }
 
@@ -861,6 +894,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedString = new ConsentString(new VersionConfig(1),
@@ -873,9 +907,10 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<Integer>(),
+                new ArrayList<Integer>(),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString resultString = ConsentString.consentStringByRemovingAllPurposeConsents(getVendorList(), consentString, updatedDate);
+        ConsentString resultString = ConsentString.consentStringByRemovingAllPurposeConsents(getVendorList(), getEditor(), consentString, updatedDate);
 
         Assert.assertEquals(expectedString, resultString);
     }
@@ -899,9 +934,10 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
-        ConsentString resultString = ConsentString.consentStringByRemovingAllPurposeConsents(getUpdatedVendorList(), consentString);
+        ConsentString resultString = ConsentString.consentStringByRemovingAllPurposeConsents(getUpdatedVendorList(),getEditor(), consentString);
         Assert.assertNull(resultString);
     }
 
@@ -924,6 +960,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedConsentString1 = new ConsentString(new VersionConfig(1),
@@ -936,6 +973,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4, 6)));
 
         ConsentString expectedConsentString2 = new ConsentString(new VersionConfig(1),
@@ -947,6 +985,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
@@ -976,6 +1015,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
         ConsentString expectedConsentString1 = new ConsentString(new VersionConfig(1),
@@ -988,6 +1028,7 @@ public class ConsentStringTest {
                 getEditor(),
                 getVendorList(),
                 new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)));
 
         ConsentString expectedConsentString2 = new ConsentString(new VersionConfig(1),
@@ -999,6 +1040,7 @@ public class ConsentStringTest {
                 new Language("en"),
                 getEditor(),
                 getVendorList(),
+                new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(1, 2, 4)));
 
