@@ -40,7 +40,7 @@ import java.util.Collections;
  * Consent tool preferences activity.
  */
 
-public class ConsentToolPreferencesActivity extends AppCompatActivity {
+public class ConsentToolPreferencesActivity extends ConsentActivity {
 
     private static final int EDITOR_PURPOSE_ACTIVITY_REQUEST_CODE = 0;
     private static final int PURPOSE_ACTIVITY_REQUEST_CODE = 1;
@@ -71,9 +71,9 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        consentString = getIntent().getParcelableExtra("consent_string");
-        vendorList = getIntent().getParcelableExtra("vendor_list");
-        editor = getIntent().getParcelableExtra("editor");
+        consentString = getConsentStringFromIntent();
+        vendorList = getVendorListFromIntent();
+        editor = getEditorFromIntent();
 
         bindViews();
     }
@@ -83,15 +83,10 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.preferences_recycler_view);
         ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
 
-        int cellCount = vendorList.getPurposes().size() + 3;
-        if (config.isEditorConfigured() && editor!= null) {
-            cellCount =  vendorList.getPurposes().size() + editor.getPurposes().size() + 4;
-        }
-
+        int cellCount = vendorList.getPurposes().size() + 3 +
+                ((config.isEditorConfigured() && editor!= null) ? editor.getPurposes().size() + 1 : 0 );
         expandedCells = new ArrayList<>(cellCount);
-
         while(cellCount-- > 0) expandedCells.add(false);
-        Log.d("dbg2", ""+expandedCells.size());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -105,9 +100,10 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent result = new Intent();
-                result.putExtra("consent_string", consentString);
-                setResult(RESULT_OK, result);
+                if (isRootConsentActivity())
+                    storeConsentString(consentString);
+                else
+                    setResultConsentString(consentString);
                 finish();
             }
         });
@@ -156,10 +152,12 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
 
             case VENDORS_LIST_ACTIVITY_REQUEST_CODE:
                 // Retrieve the new consentString.
-                ConsentString consentString = data.getParcelableExtra("consent_string");
+                ConsentString consentString = getResultConsentString(data);
                 if (consentString != null) {
                     this.consentString = consentString;
                 }
+                else
+                    Log.e("pref_activity", "returned consent string is null");
                 break;
 
             default:
@@ -337,9 +335,13 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                     holder.setSwitchListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            Log.d("editor_switch", purpose.getName()+" ("+purpose.getId()+") status is "+b);
+                            Log.d("dbg_editorpurposes_1", consentString.getEditorPurposes().toString());
                             consentString = b ?
                                     ConsentString.consentStringByAddingEditorPurposeConsent(purpose.getId(), consentString) :
                                     ConsentString.consentStringByRemovingEditorPurposeConsent(purpose.getId(), consentString);
+                            Log.d("editor_switch", "consentString is now "+consentString.getConsentString());
+                            Log.d("dbg_editorpurposes_2", consentString.getEditorPurposes().toString());
                         }
                     });
 
@@ -372,9 +374,13 @@ public class ConsentToolPreferencesActivity extends AppCompatActivity {
                     holder.setSwitchListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            Log.d("purpose_switch", purpose_v.getName()+" ("+purpose_v.getId()+") status is "+b);
+                            Log.d("dbg_editorpurposes_1", consentString.getAllowedPurposes().toString());
                             consentString = b ?
                                     ConsentString.consentStringByAddingPurposeConsent(purpose_v.getId(), consentString) :
                                     ConsentString.consentStringByRemovingPurposeConsent(purpose_v.getId(), consentString);
+                            Log.d("dbg_editorpurposes_2", consentString.getAllowedPurposes().toString());
+                            Log.d("purpose_switch", "consentString is now "+consentString.getConsentString());
                         }
                     });
                     break;

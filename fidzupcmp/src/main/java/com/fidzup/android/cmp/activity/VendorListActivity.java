@@ -27,10 +27,8 @@ import com.fidzup.android.cmp.model.VendorList;
  * Vendor list activity.
  */
 
-public class VendorListActivity extends AppCompatActivity {
+public class VendorListActivity extends ConsentActivity {
 
-    final static String EXTRA_CONTENTSTRING = "contentString";
-    final static String EXTRA_VENDORLIST = "vendorList";
     final static String EXTRA_READONLY = "readOnly";
 
     ConsentString consentString;
@@ -51,9 +49,9 @@ public class VendorListActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        consentString = getIntent().getParcelableExtra(this.EXTRA_CONTENTSTRING);
-        vendorList = getIntent().getParcelableExtra(this.EXTRA_VENDORLIST);
-        isReadOnly = getIntent().getExtras().getBoolean(this.EXTRA_READONLY, false);
+        consentString = getConsentStringFromIntent();
+        vendorList = getVendorListFromIntent();
+        isReadOnly = getIntent().getExtras().getBoolean(EXTRA_READONLY, false);
 
         // Setup the recycler view
         RecyclerView recyclerView = findViewById(R.id.vendor_recycler_view);
@@ -73,10 +71,8 @@ public class VendorListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent result = new Intent();
-        result.putExtra("consent_string", consentString);
-        setResult(RESULT_OK, result);
-        finish();
+        setResultConsentString(consentString);
+        super.onBackPressed();
     }
 
     private class VendorViewHolder extends RecyclerView.ViewHolder {

@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.fidzup.android.cmp.activity.ConsentActivity;
+import com.fidzup.android.cmp.activity.ConsentToolPreferencesActivity;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -29,6 +31,7 @@ import com.fidzup.android.cmp.editor.EditorManager;
 import com.fidzup.android.cmp.editor.EditorManagerListener;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Date;
 
 /**
@@ -407,12 +410,11 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
     }
 
     /**
-     * Internal method to update the consent string. Will automatically store the consent string in the SharedPreferences.
-     * Note: package private for test purpose.
+     * Method to update the consent string. Will automatically store the consent string in the SharedPreferences.
      *
      * @param consentString The new consent string.
      */
-    void setConsentString(ConsentString consentString) {
+    public void setConsentString(ConsentString consentString) {
         this.consentString = consentString;
 
         if (consentString == null) {
@@ -532,11 +534,24 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
     }
 
     /**
-     * Present the consent tool UI.
+     * Present the consent tool UI (settings page).
+     *
+     * @return Whether the consent tool UI has been displayed or not.
+     */
+    public boolean showConsentToolSettings() {
+        return _showConsentTool(ConsentToolPreferencesActivity.class);
+    }
+
+    /**
+     * Present the consent tool UI (main page).
      *
      * @return Whether the consent tool UI has been displayed or not.
      */
     public boolean showConsentTool() {
+        return _showConsentTool(ConsentToolActivity.class);
+    }
+
+    private boolean _showConsentTool(Class<? extends ConsentActivity> actcivityClass) {
         if (!isConfigured) {
             logErrorMessage("ConsentManager is not configured for this session. Please call ConsentManager.getSharedInstance().configure() first.");
             return false;
@@ -559,21 +574,28 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
 
         consentToolIsShown = true;
 
-        // Start ConsentToolActivity
-        Intent intent = new Intent(context, ConsentToolActivity.class);
-
         migrateConsentStringIfNeeded();
         migrateConsentStringForEditorIfNeeded();
-
         ConsentString consentString = this.consentString == null ? ConsentString.consentStringWithFullConsent(0, language, lastEditor, lastVendorList) : this.consentString;
 
-        intent.putExtra("consent_string", consentString);
-        intent.putExtra("vendor_list", lastVendorList);
-        intent.putExtra("editor", lastEditor);
+        Intent intent = ConsentActivity.getIntentForConsentActivity(context,
+                actcivityClass,
+                consentString,
+                lastVendorList,
+                lastEditor);
+
+        intent.putExtra(ConsentActivity.EXTRA_ISROOTCONSENTACTIVITY, true);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
         return true;
+    }
+
+    /**
+     * Called by the consent UI when it close.
+     */
+    public void consentToolClosed() {
+        consentToolIsShown = false;
     }
 
     /**

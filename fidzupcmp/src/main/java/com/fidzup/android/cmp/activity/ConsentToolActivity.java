@@ -6,7 +6,6 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,7 +20,7 @@ import com.fidzup.android.cmp.model.ConsentToolConfiguration;
  * Consent tool activity.
  */
 
-public class ConsentToolActivity extends AppCompatActivity {
+public class ConsentToolActivity extends ConsentActivity {
 
     static private final int PREFERENCES_REQUEST_CODE = 0;
     static private final int VENDOR_REQUEST_CODE = 1;
@@ -49,10 +48,7 @@ public class ConsentToolActivity extends AppCompatActivity {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Close UI.
                 // Accept all new vendors or purposes.
-                ConsentString consentString = getIntent().getParcelableExtra("consent_string");
-                ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
                 ConsentManager.getSharedInstance().allowAllPurposes();
                 finish();
             }
@@ -65,10 +61,7 @@ public class ConsentToolActivity extends AppCompatActivity {
         closeRefuseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Close UI.
                 // Refuse all new vendors or purposes.
-                ConsentString consentString = getIntent().getParcelableExtra("consent_string");
-                ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
                 ConsentManager.getSharedInstance().revokeAllPurposes();
                 finish();
             }
@@ -81,10 +74,10 @@ public class ConsentToolActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Start the ConsentToolPreferencesActivity
-                Intent intent = new Intent(getApplicationContext(), ConsentToolPreferencesActivity.class);
-                intent.putExtra("consent_string", getIntent().getParcelableExtra("consent_string"));
-                intent.putExtra("vendor_list", getIntent().getParcelableExtra("vendor_list"));
-                intent.putExtra("editor", getIntent().getParcelableExtra("editor"));
+                Intent intent = getIntentForConsentActivity(ConsentToolPreferencesActivity.class,
+                        getConsentStringFromIntent(),
+                        getVendorListFromIntent(),
+                        getEditorFromIntent());
                 startActivityForResult(intent, PREFERENCES_REQUEST_CODE);
             }
         });
@@ -96,41 +89,40 @@ public class ConsentToolActivity extends AppCompatActivity {
         if (requestCode == VENDOR_REQUEST_CODE) return;
         if (resultCode != RESULT_OK) return;
 
-        // Return the new consent string.
-        ConsentString consentString = data.getParcelableExtra("consent_string");
-
-        ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
-
+        // save the new consent string and close activity
+        storeConsentString(getResultConsentString(data));
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        // catch the back button pressed event.
-        // Show alert that warns the user, and force it to click on buttons to quit.
-        ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
-        new AlertDialog.Builder(this)
-                .setTitle(config.getConsentManagementAlertDialogTitle())
-                .setMessage(config.getConsentManagementAlertDialogText())
-                .setPositiveButton(config.getConsentManagementAlertDialogPositiveButtonTitle(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // Return the initial consent string.
-                        ConsentString consentString = getIntent().getParcelableExtra("consent_string");
-                        ConsentManager.getSharedInstance().consentToolClosedWithConsentString(consentString.getConsentString());
+        if(isRootConsentActivity()) { // this activity should always be root but checking anyway
 
-                        ConsentToolActivity.super.onBackPressed();
-                    }
-                })
-                .setNegativeButton(config.getConsentManagementAlertDialogNegativeButtonTitle(), null)
-                .show();
+            // catch the back button pressed event.
+            // Show alert that warns the user, and force it to click on buttons to quit.
+            ConsentToolConfiguration config = ConsentManager.getSharedInstance().getConsentToolConfiguration();
+            new AlertDialog.Builder(this)
+                    .setTitle(config.getConsentManagementAlertDialogTitle())
+                    .setMessage(config.getConsentManagementAlertDialogText())
+                    .setPositiveButton(config.getConsentManagementAlertDialogPositiveButtonTitle(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // Return the initial consent string.
+                            ConsentToolActivity.this.storeConsentString(getConsentStringFromIntent());
+                            ConsentToolActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(config.getConsentManagementAlertDialogNegativeButtonTitle(), null)
+                    .show();
+        }
     }
 
     public void onVendorListClick(View view) {
         // Start the VendorListActivity
-        Intent intent = new Intent(getApplicationContext(), VendorListActivity.class);
-        intent.putExtra(VendorListActivity.EXTRA_CONTENTSTRING, getIntent().getParcelableExtra("consent_string"));
-        intent.putExtra(VendorListActivity.EXTRA_VENDORLIST, getIntent().getParcelableExtra("vendor_list"));
+        Intent intent = getIntentForConsentActivity(VendorListActivity.class,
+                getConsentStringFromIntent(),
+                getVendorListFromIntent(),
+                getEditorFromIntent());
         intent.putExtra(VendorListActivity.EXTRA_READONLY, true);
         startActivityForResult(intent, VENDOR_REQUEST_CODE);
     }

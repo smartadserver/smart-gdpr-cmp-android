@@ -130,7 +130,7 @@ public class ConsentString implements Parcelable {
     @NonNull
     private ArrayList<Integer> allowedPurposes;
 
-    // An array of editor purposes id.
+    // An array of allowed editor purposes id.
     @SuppressWarnings("NullableProblems")
     @NonNull
     private ArrayList<Integer> editorPurposes;
@@ -1615,7 +1615,7 @@ public class ConsentString implements Parcelable {
      * @return A new consent string with a consent removed for a particular purpose.
      */
     static public ConsentString consentStringByRemovingEditorPurposeConsent(@NonNull Integer purposeId, @NonNull ConsentString consentString) {
-        return consentStringByRemovingPurposeConsent(purposeId, consentString, new Date());
+        return consentStringByRemovingEditorPurposeConsent(purposeId, consentString, new Date());
     }
 
     /**
