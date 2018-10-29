@@ -21,10 +21,21 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/close_button"
+        android:layout_above="@+id/vendorList"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fidzup_logo" />
+
+    <TextView
+        android:id="@+id/vendorList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/close_button"
+        android:onClick="onVendorListClick"
+        android:text="@string/list_vendor_popup"
+        android:textSize="18sp"
+        tools:textColor="?android:attr/textColorLink" />
 
     <Button
         android:id="@+id/close_button"
@@ -53,25 +64,11 @@
         android:id="@+id/manage_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/vendorList"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
         android:textAllCaps="false"
         android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/vendorList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="0dp"
-        android:onClick="onVendorListClick"
-        android:text="@string/list_vendor_popup"
-        android:textSize="18sp"
-        tools:textColor="?android:attr/textColorLink" />
 
 </RelativeLayout>

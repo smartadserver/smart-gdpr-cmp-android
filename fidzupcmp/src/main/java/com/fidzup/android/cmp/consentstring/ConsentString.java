@@ -19,6 +19,8 @@ import com.fidzup.android.cmp.util.BitsString;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Representation of IAB consent string.
@@ -47,6 +49,24 @@ public class ConsentString implements Parcelable {
         @SuppressWarnings("unused")
         public int getValue() {
             return value;
+        }
+
+        // Mapping consentEncoding to consentEncoding id
+        private static final Map<Integer, ConsentEncoding> _map = new HashMap<Integer, ConsentEncoding>();
+        static
+        {
+            for (ConsentEncoding consentEncoding : ConsentEncoding.values())
+                _map.put(consentEncoding.getValue(), consentEncoding);
+        }
+
+        /**
+         * Get ConsentEncoding from value
+         * @param value Value
+         * @return ConsentEncoding
+         */
+        public static ConsentEncoding from(int value)
+        {
+            return _map.get(value);
         }
     }
 
@@ -139,6 +159,8 @@ public class ConsentString implements Parcelable {
     @SuppressWarnings("NullableProblems")
     @NonNull
     private ArrayList<Integer> allowedVendors;
+
+    private ConsentEncoding vendorListEncoding;
 
     // The Base64 representation of the consent string.
     private String consentString;
@@ -412,6 +434,7 @@ public class ConsentString implements Parcelable {
         this.editorPurposes = editorPurposes;
         this.allowedPurposes = allowedPurposes;
         this.allowedVendors = allowedVendors;
+        this.vendorListEncoding = vendorListEncoding;
 
         BitsString tmp = new BitsString(true, encodeToBits(versionConfig,
                 created,
@@ -831,7 +854,22 @@ public class ConsentString implements Parcelable {
      * @return The base64URL encoded iab consent string.
      */
     public String getIABConsentString() {
-        return iabConsentString;
+        if (this.iabConsentString == null) {
+            BitsString tmp = new BitsString(true, iabEncodeToBits(versionConfig,
+                    created,
+                    lastUpdated,
+                    cmpId,
+                    cmpVersion,
+                    consentScreen,
+                    consentLanguage,
+                    vendorListVersion,
+                    maxVendorId,
+                    allowedPurposes,
+                    allowedVendors,
+                    ConsentEncoding.AUTOMATIC));
+            this.iabConsentString = tmp.stringValue;
+        }
+        return this.iabConsentString;
     }
 
     /**
@@ -1818,6 +1856,7 @@ public class ConsentString implements Parcelable {
         dest.writeList(this.editorPurposes);
         dest.writeList(this.allowedPurposes);
         dest.writeList(this.allowedVendors);
+        dest.writeInt(this.vendorListEncoding.getValue());
         dest.writeString(this.consentString);
     }
 
@@ -1841,6 +1880,7 @@ public class ConsentString implements Parcelable {
         in.readList(this.allowedPurposes, Integer.class.getClassLoader());
         this.allowedVendors = new ArrayList<>();
         in.readList(this.allowedVendors, Integer.class.getClassLoader());
+        this.vendorListEncoding = ConsentEncoding.from(in.readInt());
         this.consentString = in.readString();
     }
 

@@ -2,6 +2,7 @@ package com.fidzup.android.cmp.util;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Subclass of AsyncTask to make it easy to download a JSON file.
@@ -70,12 +72,19 @@ public class JSONAsyncTask extends AsyncTask {
 
         try {
             connection = (HttpURLConnection) JSONURL.openConnection();
+            // Try to use gzip compression if server support it, we force it for old Android version.
+            connection.setRequestProperty("Accept-Encoding", "gzip");
             connection.setConnectTimeout(TIMEOUT);
             connection.setUseCaches(false);
 
             // if connection succeeded, download response body
             if (connection.getResponseCode() == 200) {
-                inputStream = connection.getInputStream();
+                if ("gzip".equals(connection.getContentEncoding())) {
+                    inputStream = new GZIPInputStream(connection.getInputStream());
+                }
+                else {
+                    inputStream = connection.getInputStream();
+                }
                 BufferedInputStream bInputStream = new BufferedInputStream(inputStream);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(bInputStream));

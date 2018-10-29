@@ -297,6 +297,10 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
 
         // Instantiate the VendorListManager and immediately trigger the automatic refresh.
         vendorListManager = new VendorListManager(this, DEFAULT_REFRESH_INTERVAL, DEFAULT_RETRY_INTERVAL, language);
+        if (this.consentToolConfiguration.getDefaultVendorListJson() != null) {
+            // Force the first list load from the default json
+            vendorListManager.loadInitialVendorListFromJson(this.consentToolConfiguration.getDefaultVendorListJson());
+        }
         if (this.consentToolConfiguration.isPubVendorConfigured()) {
             vendorListManager.setSubVendorListURL(this.consentToolConfiguration.getConsentManagementDefaultPubVendorJsonURL());
         }
@@ -420,6 +424,9 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
         if (consentString == null) {
             return;
         }
+
+        //Confirm that an IAB CMP is present
+        saveIntegerInSharedPreferences(Constants.IABConsentKeys.CMPPresent, 1);
 
         // Store the consent string in the SharedPreferences.
         saveStringInSharedPreferences(Constants.IABConsentKeys.ConsentString, consentString.getIABConsentString());
@@ -783,7 +790,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
     }
 
     /**
-     * Save a string in the ShredPreferences.
+     * Save a string in the SharedPreferences.
      *
      * @param key    The key in SharedPreferences where the string will be saved.
      * @param string The string that needs to be saved.
@@ -792,6 +799,19 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, string);
+        editor.apply();
+    }
+
+    /**
+     * Save an integer in the SharedPreferences.
+     *
+     * @param key    The key in SharedPreferences where the string will be saved.
+     * @param integer The integer that needs to be saved.
+     */
+    private void saveIntegerInSharedPreferences(@NonNull String key, @NonNull Integer integer) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, integer);
         editor.apply();
     }
 

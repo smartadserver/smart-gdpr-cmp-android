@@ -177,6 +177,8 @@ public class ConsentToolConfiguration {
 
     private String consentManagementEditorJson;
 
+    private String defaultVendorListJson = null;
+
     private boolean isPubVendorConfigured = false;
 
     private String consentManagementDefaultPubVendorJsonURL;
@@ -290,6 +292,12 @@ public class ConsentToolConfiguration {
 
         return this;
     }
+
+    public ConsentToolConfiguration setDefaultVendorListJson(String defaultVendorListJson) {
+        this.defaultVendorListJson = defaultVendorListJson;
+        return this;
+    }
+
     /**
      * @return DrawableRes of the drawable to display on the home screen.
      */
@@ -495,6 +503,13 @@ public class ConsentToolConfiguration {
      */
     public String getConsentManagementEditorJson() {
         return this.consentManagementEditorJson;
+    }
+
+    /**
+     * @return The defaut vendor list json string
+     */
+    public String getDefaultVendorListJson() {
+        return this.defaultVendorListJson;
     }
 
     /**

@@ -276,6 +276,15 @@ public class VendorListManager {
         };
     }
 
+    public void loadInitialVendorListFromJson(String defaultVendorListJson) {
+        try {
+            listener.onVendorListUpdateSuccess(new VendorList(new JSONObject(defaultVendorListJson)));
+        } catch (Exception e) {
+            Log.e("FidzupCMP", "Parsing initial VendorList JSON failed [" + defaultVendorListJson + "]");
+            listener.onVendorListUpdateFail(e);
+        }
+    }
+
     /**
      * Enable the automatic refresh.
      */

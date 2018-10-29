@@ -127,6 +127,18 @@ Showing the consent tool is done using the method `showConsentTool()`. Note that
 
     ConsentManager.getSharedInstance().showConsentTool();
 
+### Improve first load
+
+Somtimes you can have some weird network problem on Smartphone. In that specific case, the popup won't appear until the first vendor list is loaded. You can avoid this problem by having a first vendor list loaded statically. You need to first grab a vendor list you need. Then if you use the pubvendor to resttrict the number of partners you have... Just clean the initial vendorlist to keep only the vendor you want. Then add this line to the configurator:
+
+```Java
+        String vendorListJson = "{\"vendorListVersion\":100,\"lastUpdated\":" +
+        ...
+                                ",{\"id\":529,\"name\":\"Fidzup\",\"policyUrl\":\"https://www.fidzup.com/en/privacy/\",\"purposeIds\":[1,2,3,4,5,6],\"legIntPurposeIds\":[],\"featureIds\":[1,2,3]}]}";
+
+        consentToolConfiguration.setDefaultVendorListJson(vendorListJson);
+```
+
 ## 'Limited Ad Tracking' behavior
 
 On Android, the user can opt out for any tracking related to advertisement by enabling 'Limited Ad Tracking' in the OS settings. By default, the CMP does not handle this option and let the app developer choose how he wants to proceed if it has been enabled by the user. **Please note that not handling the 'Limited Ad Tracking' option properly is a violation of Google Play Store's terms & conditions. Your app might be removed from the store.**
@@ -177,6 +189,7 @@ Be aware that this parameter can only limit the number of vendors declared in th
 
 The current version of _FidzupCMP_ has the following limitations:
 
+* On Android version lower than 5 (4.4 for example), the load of the json file is done via http instead of https
 * You can't add a vendor not listed in the IAB's Global Vendor List
 * The consent tool UI is not customizable (except for static texts). You can however build your own UI and display it in the `consentManagerRequestsToShowConsentTool` listener method using the `vendorList` and the `consentString` parameters.
 * _AndroidTV_ apps are not supported.
