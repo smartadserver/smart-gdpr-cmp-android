@@ -35,7 +35,7 @@ Retrieving user consent is mandatory in EU starting May 25th due to the _General
             // …
 
             // add SmartCMP
-            implementation 'com.smartadserver.android:smartcmp:7@aar'
+            implementation 'com.smartadserver.android:smartcmp:8@aar'
         }
 
 #### From the Git repository
