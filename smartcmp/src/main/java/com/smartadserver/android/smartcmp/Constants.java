@@ -9,12 +9,9 @@ public class Constants {
     // Generic information on the CMP sdk.
     public class CMPInfos {
 
-        // '33' IS THE OFFICIAL CMP ID FOR SmartCMP.
-        // You can use this ID as long as you don't change the source code of this project.
-        // If you don't use it exactly as distributed in the official Smart AdServer repository,
-        // you must get your own CMP ID by registering here: https://register.consensu.org/CMP
-        public static final int ID = 33;
         public static final int VERSION = 7;
+        // You must get and set your own CMP ID by registering here: https://register.consensu.org/CMP
+        public static final int ID = YOUR_CMP_ID;
     }
 
     // IAB Keys for SharedPreferences storage.
