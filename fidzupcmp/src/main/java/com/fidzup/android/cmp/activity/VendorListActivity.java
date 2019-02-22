@@ -29,7 +29,7 @@ import com.fidzup.android.cmp.model.VendorList;
 
 public class VendorListActivity extends ConsentActivity {
 
-    final static String EXTRA_READONLY = "readOnly";
+    public final static String EXTRA_READONLY = "readOnly";
 
     ConsentString consentString;
     VendorList vendorList;

@@ -32,13 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Display CMP"
-        android:layout_above="@id/display_cmp_settings_button"
-        android:layout_marginHorizontal="15dp"/>
-    <Button
-        android:id="@+id/display_cmp_settings_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Display CMP (Settings)"
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="15dp"
         android:layout_marginBottom="15dp"/>

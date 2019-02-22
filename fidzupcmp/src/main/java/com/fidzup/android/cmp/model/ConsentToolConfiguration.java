@@ -12,6 +12,9 @@ import android.support.annotation.StringRes;
 @SuppressWarnings("WeakerAccess")
 public class ConsentToolConfiguration {
 
+
+    public static int NONE = 0;
+
     // The application context. Needed to retrieve the strings.
     @NonNull
     private Context context;

@@ -22,13 +22,13 @@ public abstract class ConsentActivity extends AppCompatActivity {
     public final static String EXTRA_CONTENTSTRING_RETURN = "content_string_return";
 
     protected ConsentString getConsentStringFromIntent() {
-        return (ConsentString) getIntent().getParcelableExtra(ConsentToolPreferencesActivity.EXTRA_CONTENTSTRING);
+        return (ConsentString) getIntent().getParcelableExtra(ConsentActivity.EXTRA_CONTENTSTRING);
     }
     protected VendorList getVendorListFromIntent() {
-        return (VendorList) getIntent().getParcelableExtra(ConsentToolPreferencesActivity.EXTRA_VENDORLIST);
+        return (VendorList) getIntent().getParcelableExtra(ConsentActivity.EXTRA_VENDORLIST);
     }
     protected Editor getEditorFromIntent() {
-        return (Editor) getIntent().getParcelableExtra(ConsentToolPreferencesActivity.EXTRA_EDITOR);
+        return (Editor) getIntent().getParcelableExtra(ConsentActivity.EXTRA_EDITOR);
     }
 
     protected void setResultConsentString(ConsentString cs) {

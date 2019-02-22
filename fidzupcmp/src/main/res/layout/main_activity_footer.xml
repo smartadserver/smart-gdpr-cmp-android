@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fidzup.android.cmp.activity.main.MainActivityFooterLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp">
+
+    <Button
+        android:id="@+id/button_custom"
+        style="@style/ConsentButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="Je valide mes choix"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
+
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/line_divider"
+        app:layout_constraintTop_toBottomOf="@+id/button_custom" />
+
+    <Button
+        android:id="@+id/button_accept"
+        style="@style/ConsentButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="J'accepte tout"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintWidth_percent="0.6" />
+
+    <Button
+        android:id="@+id/button_reject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Je refuse tout"
+        android:textAllCaps="false"
+        style="@style/ConsentButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_accept"
+        app:layout_constraintWidth_percent="0.6" />
+</com.fidzup.android.cmp.activity.main.MainActivityFooterLayout>

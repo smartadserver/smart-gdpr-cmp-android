@@ -14,12 +14,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.fidzup.android.cmp.activity.ConsentActivity;
-import com.fidzup.android.cmp.activity.ConsentToolPreferencesActivity;
+import com.fidzup.android.cmp.activity.main.MainConsentActivity;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.fidzup.android.cmp.Constants;
-import com.fidzup.android.cmp.activity.ConsentToolActivity;
 import com.fidzup.android.cmp.consentstring.ConsentString;
 import com.fidzup.android.cmp.model.ConsentToolConfiguration;
 import com.fidzup.android.cmp.model.Language;
@@ -31,7 +30,6 @@ import com.fidzup.android.cmp.editor.EditorManager;
 import com.fidzup.android.cmp.editor.EditorManagerListener;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Date;
 
 /**
@@ -542,11 +540,13 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
 
     /**
      * Present the consent tool UI (settings page).
+     * Deprecated : use showConsentTool()
      *
      * @return Whether the consent tool UI has been displayed or not.
      */
+    @Deprecated
     public boolean showConsentToolSettings() {
-        return _showConsentTool(ConsentToolPreferencesActivity.class);
+        return showConsentTool();
     }
 
     /**
@@ -555,7 +555,7 @@ public class ConsentManager implements VendorListManagerListener,EditorManagerLi
      * @return Whether the consent tool UI has been displayed or not.
      */
     public boolean showConsentTool() {
-        return _showConsentTool(ConsentToolActivity.class);
+        return _showConsentTool(MainConsentActivity.class);
     }
 
     private boolean _showConsentTool(Class<? extends ConsentActivity> actcivityClass) {

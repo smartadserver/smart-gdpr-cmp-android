@@ -51,7 +51,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_navigate_next_black_24dp" />
+            app:srcCompat="@drawable/ic_navigate_next_24dp" />
     </RelativeLayout>
 
 

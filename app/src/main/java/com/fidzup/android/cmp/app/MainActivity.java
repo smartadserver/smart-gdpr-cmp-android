@@ -41,26 +41,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-        Button displayCMPSettinsButton = findViewById(R.id.display_cmp_settings_button);
-        displayCMPSettinsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!ConsentManager.getSharedInstance().showConsentToolSettings()) {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Warning")
-                            .setMessage("The consent tool UI can not be displayed yet. Please try again later.")
-                            .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            })
-                            .show();
-                }
-            }
-        });
     }
 
     @Override
